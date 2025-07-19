@@ -31,7 +31,7 @@ public class Bomb extends Sprite {
     @Override
     public void act() {
         if(!destroyed) {
-            y += 2; 
+            y += 1; 
         }
     }
 }

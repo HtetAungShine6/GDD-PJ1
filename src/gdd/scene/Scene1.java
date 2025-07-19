@@ -6,8 +6,12 @@ import static gdd.Global.*;
 import gdd.SpawnDetails;
 import gdd.powerup.PowerUp;
 import gdd.powerup.SpeedUp;
-import gdd.sprite.*;
-
+import gdd.sprite.Alien1;
+import gdd.sprite.Bomb;
+import gdd.sprite.Enemy;
+import gdd.sprite.Explosion;
+import gdd.sprite.Player;
+import gdd.sprite.Shot;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -17,6 +21,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,15 +35,14 @@ import javax.swing.Timer;
 public class Scene1 extends JPanel {
 
     private int frame = 0;
-    private List<PowerUp> powerups;//    private Shot shot;
-
+    private List<PowerUp> powerups;
     private List<Enemy> enemies;
     private List<Explosion> explosions;
     private List<Shot> shots;
     private Player player;
     private int score = 0;
 
-
+//    private Shot shot;
     final int BLOCKHEIGHT = 50;
     final int BLOCKWIDTH = 50;
 
@@ -57,32 +63,9 @@ public class Scene1 extends JPanel {
     private int currentRow = -1;
     // TODO load this map from a file
     private int mapOffset = 0;
-    private final int[][] MAP = {
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}
-    };
+    // The above code is defining a 2D array named `MAP` in Java. The array contains a pattern where
+    // each row has a 1 at the diagonal position and 0s elsewhere. This pattern repeats multiple times
+    // in the array.
 
     private HashMap<Integer, SpawnDetails> spawnMap = new HashMap<>();
     private AudioPlayer audioPlayer;
@@ -91,9 +74,12 @@ public class Scene1 extends JPanel {
 
     public Scene1(Game game) {
         this.game = game;
-        // initBoard();
+        // The code is a comment in Java indicating that a method called `initBoard()` should be called
+        // to initialize a board. The actual implementation of the `initBoard()` method is not shown in
+        // the provided code snippet.
+        initBoard();
         // gameInit();
-        loadSpawnDetails();
+        
     }
 
     private void initAudio() {
@@ -106,31 +92,25 @@ public class Scene1 extends JPanel {
         }
     }
 
-    private void loadSpawnDetails() {
-        // TODO load this from a file
-        spawnMap.put(50, new SpawnDetails("PowerUp-SpeedUp", 100, 0));
-//        spawnMap.put(200, new SpawnDetails("Alien1", 200, 0));
-//        spawnMap.put(300, new SpawnDetails("Alien1", 300, 0));
-
-        spawnMap.put(200, new SpawnDetails("Alien2", 100, 0));
-        spawnMap.put(203, new SpawnDetails("Alien2", 150, 0));
-        spawnMap.put(204, new SpawnDetails("Alien2", 250, 0));
-
-        spawnMap.put(400, new SpawnDetails("Alien1", 400, 0));
-        spawnMap.put(401, new SpawnDetails("Alien1", 450, 0));
-        spawnMap.put(402, new SpawnDetails("Alien1", 500, 0));
-        spawnMap.put(403, new SpawnDetails("Alien1", 550, 0));
-
-        spawnMap.put(500, new SpawnDetails("Alien1", 100, 0));
-        spawnMap.put(501, new SpawnDetails("Alien1", 150, 0));
-        spawnMap.put(502, new SpawnDetails("Alien1", 200, 0));
-        spawnMap.put(503, new SpawnDetails("Alien1", 350, 0));
-
-
-
+    private void loadSpawnDetailsFromCSV(String path) {
+        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+            String line = br.readLine(); // skip header
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",");
+                int frame = Integer.parseInt(parts[0]);
+                String type = parts[1];
+                int x = Integer.parseInt(parts[2]);
+                int y = Integer.parseInt(parts[3]);
+                spawnMap.put(frame, new SpawnDetails(type, x, y));
+            }
+        } catch (IOException e) {
+            System.err.println("CSV load failed: " + e.getMessage());
+        }
     }
 
-    private void initBoard() { }
+    private void initBoard() {
+        loadSpawnDetailsFromCSV("src/map/scene1_spawn.csv");
+    }
 
     public void start() {
         addKeyListener(new TAdapter());
@@ -174,43 +154,43 @@ public class Scene1 extends JPanel {
         // shot = new Shot();
     }
 
-    private void drawMap(Graphics g) {
-        // Draw scrolling starfield background
+    // private void drawMap(Graphics g) {
+    //     // Draw scrolling starfield background
 
-        // Calculate smooth scrolling offset (1 pixel per frame)
-        int scrollOffset = (frame) % BLOCKHEIGHT;
+    //     // Calculate smooth scrolling offset (1 pixel per frame)
+    //     int scrollOffset = (frame) % BLOCKHEIGHT;
 
-        // Calculate which rows to draw based on screen position
-        int baseRow = (frame) / BLOCKHEIGHT;
-        int rowsNeeded = (BOARD_HEIGHT / BLOCKHEIGHT) + 2; // +2 for smooth scrolling
+    //     // Calculate which rows to draw based on screen position
+    //     int baseRow = (frame) / BLOCKHEIGHT;
+    //     int rowsNeeded = (BOARD_HEIGHT / BLOCKHEIGHT) + 2; // +2 for smooth scrolling
 
-        // Loop through rows that should be visible on screen
-        for (int screenRow = 0; screenRow < rowsNeeded; screenRow++) {
-            // Calculate which MAP row to use (with wrapping)
-            int mapRow = (baseRow + screenRow) % MAP.length;
+    //     // Loop through rows that should be visible on screen
+    //     for (int screenRow = 0; screenRow < rowsNeeded; screenRow++) {
+    //         // Calculate which MAP row to use (with wrapping)
+    //         int mapRow = (baseRow + screenRow) % MAP.length;
 
-            // Calculate Y position for this row
-            // int y = (screenRow * BLOCKHEIGHT) - scrollOffset;
-            int y = BOARD_HEIGHT - ( (screenRow * BLOCKHEIGHT) - scrollOffset );
+    //         // Calculate Y position for this row
+    //         // int y = (screenRow * BLOCKHEIGHT) - scrollOffset;
+    //         int y = BOARD_HEIGHT - ((screenRow * BLOCKHEIGHT) - scrollOffset);
 
-            // Skip if row is completely off-screen
-            if (y > BOARD_HEIGHT || y < -BLOCKHEIGHT) {
-                continue;
-            }
+    //         // Skip if row is completely off-screen
+    //         if (y > BOARD_HEIGHT || y < -BLOCKHEIGHT) {
+    //             continue;
+    //         }
 
-            // Draw each column in this row
-            for (int col = 0; col < MAP[mapRow].length; col++) {
-                if (MAP[mapRow][col] == 1) {
-                    // Calculate X position
-                    int x = col * BLOCKWIDTH;
+    //         // Draw each column in this row
+    //         for (int col = 0; col < MAP[mapRow].length; col++) {
+    //             if (MAP[mapRow][col] == 1) {
+    //                 // Calculate X position
+    //                 int x = col * BLOCKWIDTH;
 
-                    // Draw a cluster of stars
-                    drawStarCluster(g, x, y, BLOCKWIDTH, BLOCKHEIGHT);
-                }
-            }
-        }
+    //                 // Draw a cluster of stars
+    //                 drawStarCluster(g, x, y, BLOCKWIDTH, BLOCKHEIGHT);
+    //             }
+    //         }
+    //     }
 
-    }
+    // }
 
     private void drawStarCluster(Graphics g, int x, int y, int width, int height) {
         // Set star color to white
@@ -340,7 +320,7 @@ public class Scene1 extends JPanel {
 
         if (inGame) {
 
-            drawMap(g);  // Draw background stars first
+            // drawMap(g);  // Draw background stars first
             drawExplosions(g);
             drawPowreUps(g);
             drawAliens(g);
@@ -380,7 +360,6 @@ public class Scene1 extends JPanel {
 
     private void update() {
 
-
         // Check enemy spawn
         // TODO this approach can only spawn one enemy at a frame
         SpawnDetails sd = spawnMap.get(frame);
@@ -393,8 +372,8 @@ public class Scene1 extends JPanel {
                     break;
                 // Add more cases for different enemy types if needed
                 case "Alien2":
-                     Enemy enemy2 = new Alien2(sd.x, sd.y);
-                     enemies.add(enemy2);
+                    // Enemy enemy2 = new Alien2(sd.x, sd.y);
+                    // enemies.add(enemy2);
                     break;
                 case "PowerUp-SpeedUp":
                     // Handle speed up item spawn
@@ -432,8 +411,8 @@ public class Scene1 extends JPanel {
                 enemy.act(direction);
             } else {
                 Bomb bomb = enemy.getBomb();
-                if(!bomb.isDestroyed()) {
-                    bomb.setY(bomb.getY() + 2);
+                if (!bomb.isDestroyed()) {
+                    bomb.setY(bomb.getY() + 1);
                     if (bomb.getY() >= GROUND - BOMB_HEIGHT) {
                         bomb.setDestroyed(true);
                     }
@@ -513,10 +492,9 @@ public class Scene1 extends JPanel {
         //         enemy.act(direction);
         //     }
         // }
-        
+
         // bombs - collision detection
         // Bomb is with enemy, so it loops over enemies
-        
         for (Enemy enemy : enemies) {
 
             int chance = randomizer.nextInt(15);
