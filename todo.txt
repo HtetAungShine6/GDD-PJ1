@@ -1,0 +1,18 @@
+Title Scene team members (done)
+At least two stages (game scene)
+Each stage must scroll enough to play for at least 5 minutes 
+You may load the array from external CSV.
+The last stage has a Boss fight. 
+At least Two types of enemy. 
+All sprites must be animated - with pure drawing or clipping. 
+Enemy's Bombs in a separated list. It is integrated as a part of Enemy. 
+
+Power Ups 
+Speed up - 4 steps 
+Multi-shot - 4 steps 
+[Optional] Weapon upgrade to other types such as 3-way shots 
+
+Dashboard shows status 
+Score 
+Speed 
+Shots upgrade 

@@ -6,9 +6,9 @@ import javax.swing.ImageIcon;
 public class Enemy extends Sprite {
 
     // private Bomb bomb;
+    protected Bomb bomb;
 
     public Enemy(int x, int y) {
-
         initEnemy(x, y);
     }
 
@@ -17,7 +17,7 @@ public class Enemy extends Sprite {
         this.x = x;
         this.y = y;
 
-        // bomb = new Bomb(x, y);
+        bomb = new Bomb(x, y);
 
         var ii = new ImageIcon(IMG_ENEMY);
 
@@ -31,6 +31,10 @@ public class Enemy extends Sprite {
     public void act(int direction) {
 
         this.x += direction;
+    }
+
+    public Bomb getBomb() {
+        return bomb;
     }
 /* 
     public Bomb getBomb() {

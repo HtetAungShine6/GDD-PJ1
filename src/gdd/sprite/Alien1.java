@@ -5,7 +5,7 @@ import javax.swing.ImageIcon;
 
 public class Alien1 extends Enemy {
 
-    private Bomb bomb;
+    // private Bomb bomb;
 
     public Alien1(int x, int y) {
         super(x, y);
@@ -37,41 +37,41 @@ public class Alien1 extends Enemy {
         return bomb;
     }
 
-    public class Bomb extends Sprite {
+    // public class Bomb extends Sprite {
 
-        private boolean destroyed;
+    //     private boolean destroyed;
 
-        public Bomb(int x, int y) {
+    //     public Bomb(int x, int y) {
 
-            initBomb(x, y);
-        }
+    //         initBomb(x, y);
+    //     }
 
-        private void initBomb(int x, int y) {
+    //     private void initBomb(int x, int y) {
 
-            setDestroyed(true);
+    //         setDestroyed(true);
 
-            this.x = x;
-            this.y = y;
+    //         this.x = x;
+    //         this.y = y;
 
-            var bombImg = "src/images/bomb.png";
-            var ii = new ImageIcon(bombImg);
-            setImage(ii.getImage());
-        }
+    //         var bombImg = "src/images/bomb.png";
+    //         var ii = new ImageIcon(bombImg);
+    //         setImage(ii.getImage());
+    //     }
 
-        public void setDestroyed(boolean destroyed) {
+    //     public void setDestroyed(boolean destroyed) {
 
-            this.destroyed = destroyed;
-        }
+    //         this.destroyed = destroyed;
+    //     }
 
-        public boolean isDestroyed() {
+    //     public boolean isDestroyed() {
 
-            return destroyed;
-        }
+    //         return destroyed;
+    //     }
 
-        @Override
-        public void act() {
-            // TODO Auto-generated method stub
-            throw new UnsupportedOperationException("Unimplemented method 'act'");
-        }
-    }
+    //     @Override
+    //     public void act() {
+    //         // TODO Auto-generated method stub
+    //         throw new UnsupportedOperationException("Unimplemented method 'act'");
+    //     }
+    // }
 }
