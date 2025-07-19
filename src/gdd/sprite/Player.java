@@ -11,12 +11,14 @@ public class Player extends Sprite {
     private static final int START_Y = 540;
     private int width;
     private int currentSpeed = 2;
+    private int shotLevel = 0; // NEW FIELD for Shots Upgrade
 
     private Rectangle bounds = new Rectangle(175,135,17,32);
 
     public Player() {
         initPlayer();
     }
+
 
     private void initPlayer() {
         var ii = new ImageIcon(IMG_PLAYER);
@@ -41,6 +43,14 @@ public class Player extends Sprite {
         }
         this.currentSpeed = speed;
         return currentSpeed;
+    }
+
+    public int getShotLevel() {
+        return this.shotLevel;
+    }
+
+    public void incrementShotLevel() {
+        shotLevel++;
     }
 
     public void act() {

@@ -14,7 +14,6 @@ public class SpeedUp extends PowerUp {
 
     public SpeedUp(int x, int y) {
         super(x, y);
-        // Set image
         ImageIcon ii = new ImageIcon(IMG_POWERUP_SPEEDUP);
         var scaledImage = ii.getImage().getScaledInstance(ii.getIconWidth() ,
                 ii.getIconHeight() ,
@@ -23,14 +22,17 @@ public class SpeedUp extends PowerUp {
     }
 
     public void act() {
-        // SpeedUp specific behavior can be added here
-        // For now, it just moves down the screen
-        this.y += 2; // Move down by 2 pixel each frame
+        this.y += 2;
+        this.x += 1;  // Move to the right (horizontal speed)
+        // bounce off screen edges
+        if (x < 0 || x > BOARD_WIDTH - getImage().getWidth(null)) {
+            x = Math.max(0, Math.min(x, BOARD_WIDTH - getImage().getWidth(null)));
+        }
     }
 
     public void upgrade(Player player) {
         // Upgrade the player with speed boost
-        player.setSpeed(player.getSpeed() + 4); // Increase player's speed by 1
+        player.setSpeed(player.getSpeed() + 6); // Increase player's speed by 4
         this.die(); // Remove the power-up after use
     }
 

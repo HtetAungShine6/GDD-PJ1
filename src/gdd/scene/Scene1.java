@@ -37,7 +37,9 @@ public class Scene1 extends JPanel {
     private List<Explosion> explosions;
     private List<Shot> shots;
     private Player player;
-    // private Shot shot;
+    private int score = 0;
+
+//    private Shot shot;
 
     final int BLOCKHEIGHT = 50;
     final int BLOCKWIDTH = 50;
@@ -125,9 +127,7 @@ public class Scene1 extends JPanel {
         spawnMap.put(503, new SpawnDetails("Alien1", 350, 0));
     }
 
-    private void initBoard() {
-
-    }
+    private void initBoard() { }
 
     public void start() {
         addKeyListener(new TAdapter());
@@ -267,12 +267,10 @@ public class Scene1 extends JPanel {
     private void drawPlayer(Graphics g) {
 
         if (player.isVisible()) {
-
             g.drawImage(player.getImage(), player.getX(), player.getY(), this);
         }
 
         if (player.isDying()) {
-
             player.die();
             inGame = false;
         }
@@ -332,6 +330,10 @@ public class Scene1 extends JPanel {
         g.drawString("FRAME: " + frame, 10, 10);
 
         g.setColor(Color.green);
+        g.setColor(Color.WHITE);
+        g.drawString("Score: " + score, 20, 30);
+        g.drawString("Speed: " + player.getSpeed(), 20, 50);
+        g.drawString("Shots: " + player.getShotLevel(), 20, 70);
 
         if (inGame) {
 
@@ -452,6 +454,7 @@ public class Scene1 extends JPanel {
                         enemy.setDying(true);
                         explosions.add(new Explosion(enemyX, enemyY));
                         deaths++;
+                        score += 100;
                         shot.die();
                         shotsToRemove.add(shot);
                     }
@@ -576,6 +579,7 @@ public class Scene1 extends JPanel {
                     // Create a new shot and add it to the list
                     Shot shot = new Shot(x, y);
                     shots.add(shot);
+                    player.incrementShotLevel();
                 }
             }
 
