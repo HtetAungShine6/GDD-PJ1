@@ -30,5 +30,11 @@ public class Explosion extends Sprite {
         // this.x += direction;
     }
 
+    @Override
+    public void act() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'act'");
+    }
+
 
 }

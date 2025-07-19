@@ -67,5 +67,11 @@ public class Alien1 extends Enemy {
 
             return destroyed;
         }
+
+        @Override
+        public void act() {
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException("Unimplemented method 'act'");
+        }
     }
 }
