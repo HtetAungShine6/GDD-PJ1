@@ -7,6 +7,7 @@ import gdd.SpawnDetails;
 import gdd.powerup.PowerUp;
 import gdd.powerup.SpeedUp;
 import gdd.sprite.Alien1;
+import gdd.sprite.Bomb;
 import gdd.sprite.Enemy;
 import gdd.sprite.Explosion;
 import gdd.sprite.Player;
@@ -289,12 +290,12 @@ public class Scene1 extends JPanel {
 
     private void drawBombing(Graphics g) {
 
-        // for (Enemy e : enemies) {
-        //     Enemy.Bomb b = e.getBomb();
-        //     if (!b.isDestroyed()) {
-        //         g.drawImage(b.getImage(), b.getX(), b.getY(), this);
-        //     }
-        // }
+        for (Enemy e : enemies) {
+            Bomb b = e.getBomb();
+            if (!b.isDestroyed()) {
+                g.drawImage(b.getImage(), b.getX(), b.getY(), this);
+            }
+        }
     }
 
     private void drawExplosions(Graphics g) {
@@ -340,7 +341,7 @@ public class Scene1 extends JPanel {
             drawAliens(g);
             drawPlayer(g);
             drawShot(g);
-
+            drawBombing(g);
         } else {
 
             if (timer.isRunning()) {
@@ -471,38 +472,38 @@ public class Scene1 extends JPanel {
         shots.removeAll(shotsToRemove);
 
         // enemies
-        // for (Enemy enemy : enemies) {
-        //     int x = enemy.getX();
-        //     if (x >= BOARD_WIDTH - BORDER_RIGHT && direction != -1) {
-        //         direction = -1;
-        //         for (Enemy e2 : enemies) {
-        //             e2.setY(e2.getY() + GO_DOWN);
-        //         }
-        //     }
-        //     if (x <= BORDER_LEFT && direction != 1) {
-        //         direction = 1;
-        //         for (Enemy e : enemies) {
-        //             e.setY(e.getY() + GO_DOWN);
-        //         }
-        //     }
-        // }
-        // for (Enemy enemy : enemies) {
-        //     if (enemy.isVisible()) {
-        //         int y = enemy.getY();
-        //         if (y > GROUND - ALIEN_HEIGHT) {
-        //             inGame = false;
-        //             message = "Invasion!";
-        //         }
-        //         enemy.act(direction);
-        //     }
-        // }
+        for (Enemy enemy : enemies) {
+            int x = enemy.getX();
+            if (x >= BOARD_WIDTH - BORDER_RIGHT && direction != -1) {
+                direction = -1;
+                for (Enemy e2 : enemies) {
+                    e2.setY(e2.getY() + GO_DOWN);
+                }
+            }
+            if (x <= BORDER_LEFT && direction != 1) {
+                direction = 1;
+                for (Enemy e : enemies) {
+                    e.setY(e.getY() + GO_DOWN);
+                }
+            }
+        }
+        for (Enemy enemy : enemies) {
+            if (enemy.isVisible()) {
+                int y = enemy.getY();
+                if (y > GROUND - ALIEN_HEIGHT) {
+                    inGame = false;
+                    message = "Invasion!";
+                }
+                enemy.act(direction);
+            }
+        }
         // bombs - collision detection
         // Bomb is with enemy, so it loops over enemies
-        /*
+        
         for (Enemy enemy : enemies) {
 
             int chance = randomizer.nextInt(15);
-            Enemy.Bomb bomb = enemy.getBomb();
+            Bomb bomb = enemy.getBomb();
 
             if (chance == CHANCE && enemy.isVisible() && bomb.isDestroyed()) {
 
@@ -535,7 +536,6 @@ public class Scene1 extends JPanel {
                 }
             }
         }
-         */
     }
 
     private void doGameCycle() {

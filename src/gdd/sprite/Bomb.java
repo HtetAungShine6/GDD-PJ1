@@ -30,6 +30,8 @@ public class Bomb extends Sprite {
 
     @Override
     public void act() {
-        y += 2; // or any falling logic
+        if(!destroyed) {
+            y += 2; 
+        }
     }
 }

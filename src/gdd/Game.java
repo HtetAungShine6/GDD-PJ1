@@ -13,6 +13,7 @@ public class Game extends JFrame  {
         titleScene = new TitleScene(this);
         scene1 = new Scene1(this);
         initUI();
+        initScenes();
         loadTitle();
         // loadScene2();
     }
@@ -25,6 +26,11 @@ public class Game extends JFrame  {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(false);
         setLocationRelativeTo(null);
+    }
+
+    private void initScenes() {
+        titleScene = new TitleScene(this);
+        scene1 = new Scene1(this);
     }
 
     public void loadTitle() {
