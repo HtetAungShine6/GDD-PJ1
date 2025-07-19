@@ -8,8 +8,7 @@ public class Shot extends Sprite {
     private static final int H_SPACE = 20;
     private static final int V_SPACE = 1;
 
-    public Shot() {
-    }
+    public Shot() {}
 
     public Shot(int x, int y) {
 

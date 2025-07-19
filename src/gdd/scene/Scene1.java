@@ -6,12 +6,8 @@ import static gdd.Global.*;
 import gdd.SpawnDetails;
 import gdd.powerup.PowerUp;
 import gdd.powerup.SpeedUp;
-import gdd.sprite.Alien1;
-import gdd.sprite.Bomb;
-import gdd.sprite.Enemy;
-import gdd.sprite.Explosion;
-import gdd.sprite.Player;
-import gdd.sprite.Shot;
+import gdd.sprite.*;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -32,14 +28,14 @@ import javax.swing.Timer;
 public class Scene1 extends JPanel {
 
     private int frame = 0;
-    private List<PowerUp> powerups;
+    private List<PowerUp> powerups;//    private Shot shot;
+
     private List<Enemy> enemies;
     private List<Explosion> explosions;
     private List<Shot> shots;
     private Player player;
     private int score = 0;
 
-//    private Shot shot;
 
     final int BLOCKHEIGHT = 50;
     final int BLOCKWIDTH = 50;
@@ -113,8 +109,12 @@ public class Scene1 extends JPanel {
     private void loadSpawnDetails() {
         // TODO load this from a file
         spawnMap.put(50, new SpawnDetails("PowerUp-SpeedUp", 100, 0));
-        spawnMap.put(200, new SpawnDetails("Alien1", 200, 0));
-        spawnMap.put(300, new SpawnDetails("Alien1", 300, 0));
+//        spawnMap.put(200, new SpawnDetails("Alien1", 200, 0));
+//        spawnMap.put(300, new SpawnDetails("Alien1", 300, 0));
+
+        spawnMap.put(200, new SpawnDetails("Alien2", 100, 0));
+        spawnMap.put(203, new SpawnDetails("Alien2", 150, 0));
+        spawnMap.put(204, new SpawnDetails("Alien2", 250, 0));
 
         spawnMap.put(400, new SpawnDetails("Alien1", 400, 0));
         spawnMap.put(401, new SpawnDetails("Alien1", 450, 0));
@@ -125,6 +125,9 @@ public class Scene1 extends JPanel {
         spawnMap.put(501, new SpawnDetails("Alien1", 150, 0));
         spawnMap.put(502, new SpawnDetails("Alien1", 200, 0));
         spawnMap.put(503, new SpawnDetails("Alien1", 350, 0));
+
+
+
     }
 
     private void initBoard() { }
@@ -390,8 +393,8 @@ public class Scene1 extends JPanel {
                     break;
                 // Add more cases for different enemy types if needed
                 case "Alien2":
-                    // Enemy enemy2 = new Alien2(sd.x, sd.y);
-                    // enemies.add(enemy2);
+                     Enemy enemy2 = new Alien2(sd.x, sd.y);
+                     enemies.add(enemy2);
                     break;
                 case "PowerUp-SpeedUp":
                     // Handle speed up item spawn
