@@ -427,11 +427,21 @@ public class Scene1 extends JPanel {
         for (Enemy enemy : enemies) {
             if (enemy.isVisible()) {
                 enemy.act(direction);
+            } else {
+                Bomb bomb = enemy.getBomb();
+                if(!bomb.isDestroyed()) {
+                    bomb.setY(bomb.getY() + 2);
+                    if (bomb.getY() >= GROUND - BOMB_HEIGHT) {
+                        bomb.setDestroyed(true);
+                    }
+                }
             }
         }
 
         // shot
         List<Shot> shotsToRemove = new ArrayList<>();
+        int hitboxPadding = 10;
+
         for (Shot shot : shots) {
 
             if (shot.isVisible()) {
@@ -445,9 +455,9 @@ public class Scene1 extends JPanel {
 
                     if (enemy.isVisible() && shot.isVisible()
                             && shotX >= (enemyX)
-                            && shotX <= (enemyX + ALIEN_WIDTH)
+                            && shotX <= (enemyX + ALIEN_WIDTH + hitboxPadding)
                             && shotY >= (enemyY)
-                            && shotY <= (enemyY + ALIEN_HEIGHT)) {
+                            && shotY <= (enemyY + ALIEN_HEIGHT + hitboxPadding)) {
 
                         var ii = new ImageIcon(IMG_EXPLOSION);
                         enemy.setImage(ii.getImage());
@@ -490,16 +500,17 @@ public class Scene1 extends JPanel {
                 }
             }
         }
-        for (Enemy enemy : enemies) {
-            if (enemy.isVisible()) {
-                int y = enemy.getY();
-                if (y > GROUND - ALIEN_HEIGHT) {
-                    inGame = false;
-                    message = "Invasion!";
-                }
-                enemy.act(direction);
-            }
-        }
+        // for (Enemy enemy : enemies) {
+        //     if (enemy.isVisible()) {
+        //         int y = enemy.getY();
+        //         if (y > GROUND - ALIEN_HEIGHT) {
+        //             inGame = false;
+        //             message = "Invasion!";
+        //         }
+        //         enemy.act(direction);
+        //     }
+        // }
+        
         // bombs - collision detection
         // Bomb is with enemy, so it loops over enemies
         
