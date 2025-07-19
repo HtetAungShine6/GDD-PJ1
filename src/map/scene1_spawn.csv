@@ -4,7 +4,7 @@ frame,type,x,y
 201,Alien2,250,0
 300,Alien1,300,0
 400,Alien2,350,0
-450,PowerUp-MultiShot,120,0
+450,PowerUp-Multishot,120,0
 600,Alien1,100,0
 601,Alien2,200,0
 900,Alien1,300,0
@@ -29,7 +29,7 @@ frame,type,x,y
 2700,Alien2,200,0
 2800,Alien2,100,0
 2900,Alien1,250,0
-3000,PowerUp-MultiShot,120,0
+3000,PowerUp-Multishot,120,0
 3100,Alien1,100,0
 3200,Alien2,150,0
 3300,Alien1,200,0
@@ -51,5 +51,5 @@ frame,type,x,y
 5100,Alien2,350,0
 5200,Alien1,400,0
 5300,Alien2,450,0
-5400,PowerUp-MultiShot,180,0
+5400,PowerUp-Multishot,180,0
 3600,Boss,200,0

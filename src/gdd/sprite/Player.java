@@ -11,14 +11,14 @@ public class Player extends Sprite {
     private static final int START_Y = 540;
     private int width;
     private int currentSpeed = 2;
-    private int shotLevel = 0; // NEW FIELD for Shots Upgrade
+    private int multishotLevel = 1;
+    private int shotLevel = 1;
 
-    private Rectangle bounds = new Rectangle(175,135,17,32);
+    private Rectangle bounds = new Rectangle(175, 135, 17, 32);
 
     public Player() {
         initPlayer();
     }
-
 
     private void initPlayer() {
         var ii = new ImageIcon(IMG_PLAYER);
@@ -45,12 +45,26 @@ public class Player extends Sprite {
         return currentSpeed;
     }
 
+    public int getMultishotLevel() {
+        return multishotLevel;
+    }
+
     public int getShotLevel() {
         return this.shotLevel;
     }
 
-    public void incrementShotLevel() {
-        shotLevel++;
+    private void setMultishotLevel(int level) {
+        if (level >= 1 && level <= 4) {
+            multishotLevel = level;
+        }
+    }
+
+    public boolean upgradeMultishot() {
+        if (multishotLevel < 4) {
+            multishotLevel++;
+            return true;
+        }
+        return false;
     }
 
     public void act() {

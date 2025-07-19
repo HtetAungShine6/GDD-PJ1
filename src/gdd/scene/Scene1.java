@@ -4,6 +4,7 @@ import gdd.AudioPlayer;
 import gdd.Game;
 import static gdd.Global.*;
 import gdd.SpawnDetails;
+import gdd.powerup.MultiShot;
 import gdd.powerup.PowerUp;
 import gdd.powerup.SpeedUp;
 import gdd.sprite.Alien1;
@@ -43,7 +44,7 @@ public class Scene1 extends JPanel {
     private Player player;
     private int score = 0;
 
-//    private Shot shot;
+    // private Shot shot;
     final int BLOCKHEIGHT = 50;
     final int BLOCKWIDTH = 50;
 
@@ -64,8 +65,10 @@ public class Scene1 extends JPanel {
     private int currentRow = -1;
     // TODO load this map from a file
     private int mapOffset = 0;
-    // The above code is defining a 2D array named `MAP` in Java. The array contains a pattern where
-    // each row has a 1 at the diagonal position and 0s elsewhere. This pattern repeats multiple times
+    // The above code is defining a 2D array named `MAP` in Java. The array contains
+    // a pattern where
+    // each row has a 1 at the diagonal position and 0s elsewhere. This pattern
+    // repeats multiple times
     // in the array.
 
     private HashMap<Integer, SpawnDetails> spawnMap = new HashMap<>();
@@ -75,12 +78,14 @@ public class Scene1 extends JPanel {
 
     public Scene1(Game game) {
         this.game = game;
-        // The code is a comment in Java indicating that a method called `initBoard()` should be called
-        // to initialize a board. The actual implementation of the `initBoard()` method is not shown in
+        // The code is a comment in Java indicating that a method called `initBoard()`
+        // should be called
+        // to initialize a board. The actual implementation of the `initBoard()` method
+        // is not shown in
         // the provided code snippet.
         initBoard();
         // gameInit();
-        
+
     }
 
     private void initAudio() {
@@ -156,40 +161,36 @@ public class Scene1 extends JPanel {
     }
 
     // private void drawMap(Graphics g) {
-    //     // Draw scrolling starfield background
+    // // Draw scrolling starfield background
 
-    //     // Calculate smooth scrolling offset (1 pixel per frame)
-    //     int scrollOffset = (frame) % BLOCKHEIGHT;
+    // // Calculate smooth scrolling offset (1 pixel per frame)
+    // int scrollOffset = (frame) % BLOCKHEIGHT;
 
-    //     // Calculate which rows to draw based on screen position
-    //     int baseRow = (frame) / BLOCKHEIGHT;
-    //     int rowsNeeded = (BOARD_HEIGHT / BLOCKHEIGHT) + 2; // +2 for smooth scrolling
+    // // Calculate which rows to draw based on screen position
+    // int baseRow = (frame) / BLOCKHEIGHT;
+    // int rowsNeeded = (BOARD_HEIGHT / BLOCKHEIGHT) + 2; // +2 for smooth scrolling
 
-    //     // Loop through rows that should be visible on screen
-    //     for (int screenRow = 0; screenRow < rowsNeeded; screenRow++) {
-    //         // Calculate which MAP row to use (with wrapping)
-    //         int mapRow = (baseRow + screenRow) % MAP.length;
+    // // Loop through rows that should be visible on screen
+    // for (int screenRow = 0; screenRow < rowsNeeded; screenRow++) {
+    // // Calculate which MAP row to use (with wrapping)
+    // int mapRow = (baseRow + screenRow) % MAP.length;
 
-    //         // Calculate Y position for this row
-    //         // int y = (screenRow * BLOCKHEIGHT) - scrollOffset;
-    //         int y = BOARD_HEIGHT - ((screenRow * BLOCKHEIGHT) - scrollOffset);
+    // // Skip if row is completely off-screen
+    // if (y > BOARD_HEIGHT || y < -BLOCKHEIGHT) {
+    // continue;
+    // }
 
-    //         // Skip if row is completely off-screen
-    //         if (y > BOARD_HEIGHT || y < -BLOCKHEIGHT) {
-    //             continue;
-    //         }
+    // // Draw each column in this row
+    // for (int col = 0; col < MAP[mapRow].length; col++) {
+    // if (MAP[mapRow][col] == 1) {
+    // // Calculate X position
+    // int x = col * BLOCKWIDTH;
 
-    //         // Draw each column in this row
-    //         for (int col = 0; col < MAP[mapRow].length; col++) {
-    //             if (MAP[mapRow][col] == 1) {
-    //                 // Calculate X position
-    //                 int x = col * BLOCKWIDTH;
-
-    //                 // Draw a cluster of stars
-    //                 drawStarCluster(g, x, y, BLOCKWIDTH, BLOCKHEIGHT);
-    //             }
-    //         }
-    //     }
+    // // Draw a cluster of stars
+    // drawStarCluster(g, x, y, BLOCKWIDTH, BLOCKHEIGHT);
+    // }
+    // }
+    // }
 
     // }
 
@@ -317,11 +318,12 @@ public class Scene1 extends JPanel {
         g.setColor(Color.WHITE);
         g.drawString("Score: " + score, 20, 30);
         g.drawString("Speed: " + player.getSpeed(), 20, 50);
-        g.drawString("Shots: " + player.getShotLevel(), 20, 70);
+        // g.drawString("Shots: " + player.getShotLevel(), 20, 70);
+        g.drawString("Multishot Level: " + player.getMultishotLevel(), 20, 70);
 
         if (inGame) {
 
-            // drawMap(g);  // Draw background stars first
+            // drawMap(g); // Draw background stars first
             drawExplosions(g);
             drawPowreUps(g);
             drawAliens(g);
@@ -380,6 +382,11 @@ public class Scene1 extends JPanel {
                     // Handle speed up item spawn
                     PowerUp speedUp = new SpeedUp(sd.x, sd.y);
                     powerups.add(speedUp);
+                    break;
+                case "PowerUp-Multishot":
+                    // Handle multishot item spawn
+                    PowerUp multiShot = new MultiShot(sd.x, sd.y);
+                    powerups.add(multiShot);
                     break;
                 default:
                     System.out.println("Unknown enemy type: " + sd.type);
@@ -484,14 +491,14 @@ public class Scene1 extends JPanel {
             }
         }
         // for (Enemy enemy : enemies) {
-        //     if (enemy.isVisible()) {
-        //         int y = enemy.getY();
-        //         if (y > GROUND - ALIEN_HEIGHT) {
-        //             inGame = false;
-        //             message = "Invasion!";
-        //         }
-        //         enemy.act(direction);
-        //     }
+        // if (enemy.isVisible()) {
+        // int y = enemy.getY();
+        // if (y > GROUND - ALIEN_HEIGHT) {
+        // inGame = false;
+        // message = "Invasion!";
+        // }
+        // enemy.act(direction);
+        // }
         // }
 
         // bombs - collision detection
@@ -567,15 +574,18 @@ public class Scene1 extends JPanel {
             int key = e.getKeyCode();
 
             if (key == KeyEvent.VK_SPACE && inGame) {
-                System.out.println("Shots: " + shots.size());
-                if (shots.size() < 4) {
-                    // Create a new shot and add it to the list
-                    Shot shot = new Shot(x, y);
-                    shots.add(shot);
-                    player.incrementShotLevel();
+                int multishotLevel = player.getMultishotLevel();
+                int centerX = player.getX() + PLAYER_WIDTH / 2;
+
+                int spacing = 10;
+                int totalWidth = spacing * (multishotLevel - 1);
+                int startX = centerX - totalWidth / 2;
+
+                for (int i = 0; i < multishotLevel; i++) {
+                    int shotX = startX + i * spacing;
+                    shots.add(new Shot(shotX, y));
                 }
             }
-
         }
     }
 }
