@@ -87,36 +87,82 @@ public class TitleScene extends JPanel {
     }
 
     private void doDrawing(Graphics g) {
-
         g.setColor(Color.black);
         g.fillRect(0, 0, d.width, d.height);
-
         g.drawImage(image, 0, -80, d.width, d.height, this);
 
+        // Blinking "Press SPACE to Start"
         if (frame % 60 < 30) {
             g.setColor(Color.red);
         } else {
             g.setColor(Color.white);
         }
-
-        g.setFont(g.getFont().deriveFont(32f));
+        g.setFont(g.getFont().deriveFont(28f));
         String text = "Press SPACE to Start";
         int stringWidth = g.getFontMetrics().stringWidth(text);
         int x = (d.width - stringWidth) / 2;
-        // int stringHeight = g.getFontMetrics().getAscent();
-        // int y = (d.height + stringHeight) / 2;
-        g.drawString(text, x, 600);
+        g.drawString(text, x, 550);
 
-        g.setColor(Color.gray);
-        g.drawString("Team Members:", 10, 30);
-        g.drawString("1. Hein Naing Soe", 10, 70);
-        g.drawString("2. Htet Aung Shine", 10, 110);
-        g.drawString("3. Hsu Yee Mon", 10, 150);
-        g.setFont(g.getFont().deriveFont(10f));
-        // g.drawString("Game by Chayapol", 10, 650);
+        g.setColor(Color.white);
+        g.setFont(g.getFont().deriveFont(18f));
+        String header = "Team Members:";
+        int headerWidth = g.getFontMetrics().stringWidth(header);
+        g.drawString(header, (d.width - headerWidth) / 2, 590);
+
+        String name1 = "- Hein Naing Soe";
+        String name2 = "- Htet Aung Shine";
+        String name3 = "- Hsu Yee Mon";
+
+        int spacing = 40;
+        int y = 630;
+
+        int name1Width = g.getFontMetrics().stringWidth(name1);
+        int name2Width = g.getFontMetrics().stringWidth(name2);
+        int name3Width = g.getFontMetrics().stringWidth(name3);
+
+        int totalWidth = name1Width + name2Width + name3Width + spacing * 2;
+        int x_for_name = (d.width - totalWidth) / 2;
+
+        g.drawString(name1, x_for_name, y);
+        g.drawString(name2, x_for_name + name1Width + spacing, y);
+        g.drawString(name3, x_for_name + name1Width + name2Width + spacing * 2, y);
 
         Toolkit.getDefaultToolkit().sync();
     }
+
+
+
+//    private void doDrawing(Graphics g) {
+//
+//        g.setColor(Color.black);
+//        g.fillRect(0, 0, d.width, d.height);
+//
+//        g.drawImage(image, 0, -80, d.width, d.height, this);
+//
+//        if (frame % 60 < 30) {
+//            g.setColor(Color.red);
+//        } else {
+//            g.setColor(Color.white);
+//        }
+//
+//        g.setFont(g.getFont().deriveFont(32f));
+//        String text = "Press SPACE to Start";
+//        int stringWidth = g.getFontMetrics().stringWidth(text);
+//        int x = (d.width - stringWidth) / 2;
+//        // int stringHeight = g.getFontMetrics().getAscent();
+//        // int y = (d.height + stringHeight) / 2;
+//        g.drawString(text, x, 600);
+//
+//        g.setColor(Color.gray);
+//        g.drawString("Team Members:", 10, 30);
+//        g.drawString("1. Hein Naing Soe", 10, 70);
+//        g.drawString("2. Htet Aung Shine", 10, 110);
+//        g.drawString("3. Hsu Yee Mon", 10, 150);
+//        g.setFont(g.getFont().deriveFont(10f));
+//        // g.drawString("Game by Chayapol", 10, 650);
+//
+//        Toolkit.getDefaultToolkit().sync();
+//    }
 
     private void update() {
         frame++;

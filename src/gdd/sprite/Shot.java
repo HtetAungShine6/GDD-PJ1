@@ -21,7 +21,7 @@ public class Shot extends Sprite {
 
         // Scale the image to use the global scaling factor
         var scaledImage = ii.getImage().getScaledInstance(ii.getIconWidth() * SCALE_FACTOR,
-                ii.getIconHeight() * SCALE_FACTOR, 
+                ii.getIconHeight() * 6,
                 java.awt.Image.SCALE_SMOOTH);
         setImage(scaledImage);
 

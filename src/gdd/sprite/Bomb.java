@@ -17,7 +17,9 @@ public class Bomb extends Sprite {
 
         var bombImg = "src/images/bomb.png";
         var ii = new ImageIcon(bombImg);
-        setImage(ii.getImage());
+        var scaledImage = ii.getImage().getScaledInstance(10, 20, java.awt.Image.SCALE_SMOOTH);
+        setImage(scaledImage);
+//        setImage(ii.getImage());
     }
 
     public void setDestroyed(boolean destroyed) {

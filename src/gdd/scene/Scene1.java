@@ -14,11 +14,8 @@ import gdd.sprite.Enemy;
 import gdd.sprite.Explosion;
 import gdd.sprite.Player;
 import gdd.sprite.Shot;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Toolkit;
+
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -43,6 +40,8 @@ public class Scene1 extends JPanel {
     private List<Shot> shots;
     private Player player;
     private int score = 0;
+    private Image background;
+
 
     // private Shot shot;
     final int BLOCKHEIGHT = 50;
@@ -116,6 +115,7 @@ public class Scene1 extends JPanel {
 
     private void initBoard() {
         loadSpawnDetailsFromCSV("src/map/scene1_spawn.csv");
+        background = new ImageIcon("src/images/lvl1.png").getImage();
     }
 
     public void start() {
@@ -308,8 +308,7 @@ public class Scene1 extends JPanel {
 
     private void doDrawing(Graphics g) {
 
-        g.setColor(Color.black);
-        g.fillRect(0, 0, d.width, d.height);
+        g.drawImage(background,0, 0, d.width, d.height,this);
 
         g.setColor(Color.white);
         g.drawString("FRAME: " + frame, 10, 10);
@@ -474,6 +473,11 @@ public class Scene1 extends JPanel {
         }
         shots.removeAll(shotsToRemove);
 
+        // Update explosion animation frames
+        for (Explosion explosion : explosions) {
+            explosion.visibleCountDown();
+        }
+
         // enemies
         for (Enemy enemy : enemies) {
             int x = enemy.getX();
@@ -581,6 +585,12 @@ public class Scene1 extends JPanel {
                 int totalWidth = spacing * (multishotLevel - 1);
                 int startX = centerX - totalWidth / 2;
 
+//                int shotWidth = 5; // replace with actual width if different
+//                int playerCenterX = player.getX() + PLAYER_WIDTH / 2;
+//
+//                int spacing = 10;
+//                int totalWidth = spacing * (multishotLevel - 1);
+//                int startX = playerCenterX - totalWidth / 2 - shotWidth / 2;
                 for (int i = 0; i < multishotLevel; i++) {
                     int shotX = startX + i * spacing;
                     shots.add(new Shot(shotX, y));

@@ -1,7 +1,8 @@
 package gdd.sprite;
 
 import static gdd.Global.*;
-import java.awt.Rectangle;
+
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import javax.swing.ImageIcon;
 
@@ -13,6 +14,7 @@ public class Player extends Sprite {
     private int currentSpeed = 2;
     private int multishotLevel = 1;
     private int shotLevel = 1;
+    private Image[] multishotImages;
 
     private Rectangle bounds = new Rectangle(175, 135, 17, 32);
 
@@ -21,13 +23,25 @@ public class Player extends Sprite {
     }
 
     private void initPlayer() {
-        var ii = new ImageIcon(IMG_PLAYER);
+        multishotImages = new Image[4]; // For 4 levels
 
-        // Scale the image to use the global scaling factor
-        var scaledImage = ii.getImage().getScaledInstance(ii.getIconWidth() * SCALE_FACTOR,
-                ii.getIconHeight() * SCALE_FACTOR,
-                java.awt.Image.SCALE_SMOOTH);
-        setImage(scaledImage);
+        for (int i = 0; i < multishotImages.length; i++) {
+            var ii = new ImageIcon("src/images/player" + (i + 1) + ".png");
+            var scaled = ii.getImage().getScaledInstance(
+                    ii.getIconWidth() * SCALE_FACTOR,
+                    ii.getIconHeight() * SCALE_FACTOR,
+                    java.awt.Image.SCALE_SMOOTH);
+            multishotImages[i] = scaled;
+        }
+        setImage(multishotImages[0]);
+
+//        var ii = new ImageIcon(IMG_PLAYER);
+//
+//        // Scale the image to use the global scaling factor
+//        var scaledImage = ii.getImage().getScaledInstance(ii.getIconWidth() * SCALE_FACTOR,
+//                ii.getIconHeight() * SCALE_FACTOR,
+//                java.awt.Image.SCALE_SMOOTH);
+//        setImage(scaledImage);
 
         setX(START_X);
         setY(START_Y);
@@ -62,10 +76,12 @@ public class Player extends Sprite {
     public boolean upgradeMultishot() {
         if (multishotLevel < 4) {
             multishotLevel++;
+            setImage(multishotImages[multishotLevel - 1]);
             return true;
         }
         return false;
     }
+
 
     public void act() {
         x += dx;
