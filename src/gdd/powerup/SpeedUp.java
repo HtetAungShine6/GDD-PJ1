@@ -15,8 +15,8 @@ public class SpeedUp extends PowerUp {
     public SpeedUp(int x, int y) {
         super(x, y);
         ImageIcon ii = new ImageIcon(IMG_POWERUP_SPEEDUP);
-        var scaledImage = ii.getImage().getScaledInstance(ii.getIconWidth() ,
-                ii.getIconHeight() ,
+        var scaledImage = ii.getImage().getScaledInstance((int) (ii.getIconWidth() * 0.05),
+                (int) (ii.getIconHeight() * 0.05),
                 java.awt.Image.SCALE_SMOOTH);
         setImage(scaledImage);
     }
