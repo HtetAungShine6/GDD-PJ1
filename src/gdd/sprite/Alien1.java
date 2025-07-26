@@ -2,10 +2,15 @@ package gdd.sprite;
 
 import static gdd.Global.*;
 import javax.swing.ImageIcon;
+import java.awt.*;
 
 public class Alien1 extends Enemy {
 
     // private Bomb bomb;
+    private Image[] animationFrames;
+    private int currentFrame = 0;
+    private int frameDelay = 16;  // Controls how fast it changes frame
+    private int frameCount = 0;  // Counts how many act() calls passed
 
     public Alien1(int x, int y) {
         super(x, y);
@@ -19,18 +24,37 @@ public class Alien1 extends Enemy {
 
         bomb = new Bomb(x, y);
 
-        var ii = new ImageIcon(IMG_ENEMY);
+        animationFrames = new Image[5];
 
-        // Scale the image to use the global scaling factor
-        var scaledImage = ii.getImage().getScaledInstance(ii.getIconWidth() * SCALE_FACTOR,
-                ii.getIconHeight() * SCALE_FACTOR,
-                java.awt.Image.SCALE_SMOOTH);
-        setImage(scaledImage);
+        for (int i = 0; i < 5; i++) {
+
+            String filePath = i == 0 ? "src/images/alienType1.png" : "src/images/alienType1-" + i + ".png";
+            ImageIcon ii = new ImageIcon(filePath);
+
+            int scaledWidth = (int)(ii.getIconWidth() * SCALE_FACTOR );
+            int scaledHeight = (int)(ii.getIconHeight() * SCALE_FACTOR);
+
+            animationFrames[i] = ii.getImage().getScaledInstance(
+                    scaledWidth,
+                    scaledHeight,
+                    java.awt.Image.SCALE_SMOOTH
+            );
+        }
+
+        setImage(animationFrames[0]);
     }
 
     @Override
     public void act(int direction) {
         this.y++;
+        // Animate
+        frameCount++;
+        if (frameCount >= frameDelay) {
+            frameCount = 0;
+            currentFrame = (currentFrame + 1) % animationFrames.length;
+            setImage(animationFrames[currentFrame]);
+        }
+
         if (bomb != null && !bomb.isDestroyed()) {
             bomb.act();
         }

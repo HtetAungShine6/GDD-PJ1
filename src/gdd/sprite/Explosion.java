@@ -8,14 +8,14 @@ public class Explosion extends Sprite {
 
     private Image[] frames;       // Explosion frame images
     private int currentFrame;     // Which frame is being shown
-    private int frameDelay = 3;   // How long to show each frame (in ticks)
+    private int frameDelay = 12;   // How long to show each frame (in ticks)
     private int frameCounter = 0; // Counter for frame delay
     private boolean visible = true;
 
-    public Explosion(int x, int y) {
+    public Explosion(int x, int y, boolean isPlayerExplosion) {
 
         initExplosion(x, y);
-        loadFrames();
+        loadFrames(isPlayerExplosion);
         setImage(frames[0]);
     }
 
@@ -23,29 +23,51 @@ public class Explosion extends Sprite {
 
         this.x = x;
         this.y = y;
-
-//        var ii = new ImageIcon(IMG_EXPLOSION);
-
-        // Scale the image to use the global scaling factor
-//        var scaledImage = ii.getImage().getScaledInstance(ii.getIconWidth() * SCALE_FACTOR,
-//                ii.getIconHeight() * SCALE_FACTOR,
-//                java.awt.Image.SCALE_SMOOTH);
-//        setImage(scaledImage);
     }
+    private void loadFrames(boolean isPlayerExplosion) {
+        if(isPlayerExplosion){
+            int numFrames = 9;
+            frames = new Image[numFrames];
+            for(int i = 0; i < numFrames; i++){
+                String path = "src/images/player-explosion"+(i+1)+".png";
+                ImageIcon icon = new ImageIcon(path);
+                frames[i] = icon.getImage().getScaledInstance(
+                        (int)(icon.getIconWidth() * SCALE_FACTOR * 0.3),
+                        (int)(icon.getIconHeight() * SCALE_FACTOR * 0.3),
+                        Image.SCALE_SMOOTH
+                );
+            }
+        } else{
+            int numFrames = 6;
+            frames = new Image[numFrames];
 
-    private void loadFrames() {
-        int numFrames = 6;  // Change based on how many explosion images you have
-        frames = new Image[numFrames];
+            for (int i = 0; i < numFrames; i++) {
+                String path = "src/images/explosion" + (i + 1) + ".png";
 
-        for (int i = 0; i < numFrames; i++) {
-            String path = "src/images/explosion" + (i + 1) + ".png"; // ex: explosion1.png
-            ImageIcon icon = new ImageIcon(path);
-            frames[i] = icon.getImage().getScaledInstance(
-                    icon.getIconWidth() * SCALE_FACTOR,
-                    icon.getIconHeight() * SCALE_FACTOR,
-                    Image.SCALE_SMOOTH);
+                ImageIcon icon = new ImageIcon(path);
+                frames[i] = icon.getImage().getScaledInstance(
+                        (int)(icon.getIconWidth() * SCALE_FACTOR * 0.2),
+                        (int)(icon.getIconHeight() * SCALE_FACTOR * 0.2),
+                        Image.SCALE_SMOOTH
+                );
+            }
         }
+
     }
+
+//    private void loadFrames() {
+//        int numFrames = 6;
+//        frames = new Image[numFrames];
+//
+//        for (int i = 0; i < numFrames; i++) {
+//            String path = "src/images/explosion" + (i + 1) + ".png"; // ex: explosion1.png
+//            ImageIcon icon = new ImageIcon(path);
+//            frames[i] = icon.getImage().getScaledInstance(
+//                    (int) (icon.getIconWidth() * SCALE_FACTOR * 0.2),
+//                    (int) (icon.getIconHeight() * SCALE_FACTOR * 0.2),
+//                    Image.SCALE_SMOOTH);
+//        }
+//    }
 
     public void act(int direction) {
         // this.x += direction;

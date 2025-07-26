@@ -201,7 +201,18 @@ public class Scene1 extends JPanel {
         }
         if (player.isDying()) {
             player.die();
-            inGame = false;
+//            inGame = false;
+            boolean explosionDone = true;
+            for (Explosion ex : explosions) {
+                if (ex.isVisible()) {
+                    explosionDone = false;
+                    break;
+                }
+            }
+
+            if (explosionDone) {
+                inGame = false;
+            }
         }
     }
 
@@ -255,13 +266,13 @@ public class Scene1 extends JPanel {
     private void doDrawing(Graphics g) {
         g.drawImage(background, 0, 0, d.width, d.height, this);
         g.setColor(Color.white);
-        g.drawString("FRAME: " + frame, 10, 10);
+        g.drawString("FRAME: " + frame, 90, 60);
         g.setColor(Color.green);
         g.setColor(Color.WHITE);
-        g.drawString("Score: " + score, 20, 30);
-        g.drawString("Speed: " + player.getSpeed(), 20, 50);
+        g.drawString("Score: " + score, 90, 80);
+        g.drawString("Speed: " + player.getSpeed(), 90, 100);
         // g.drawString("Shots: " + player.getShotLevel(), 20, 70);
-        g.drawString("Multishot Level: " + player.getMultishotLevel(), 20, 70);
+        g.drawString("Multishot Level: " + player.getMultishotLevel(), 90,  120);
 
         if (inGame) {
 
@@ -492,13 +503,14 @@ public class Scene1 extends JPanel {
                     }
                 }
             } else {
-                // Existing logic for regular enemies
                 Bomb bomb = enemy.getBomb();
                 int chance = randomizer.nextInt(15);
                 if (chance == CHANCE && enemy.isVisible() && bomb.isDestroyed()) {
                     bomb.setDestroyed(false);
-                    bomb.setX(enemy.getX());
-                    bomb.setY(enemy.getY());
+                    int alienCenterX = enemy.getX() + enemy.getImage().getWidth(null) / 2;
+                    int alienBottomY = enemy.getY() + enemy.getImage().getHeight(null);
+                    bomb.setX(alienCenterX);
+                    bomb.setY(alienBottomY);
                 }
 
                 if (!bomb.isDestroyed()) {
@@ -512,15 +524,21 @@ public class Scene1 extends JPanel {
                     int playerX = player.getX();
                     int playerY = player.getY();
 
-                    if (player.isVisible()
+                    if (player.isVisible() && !bomb.isDestroyed()
                             && bombX >= playerX
                             && bombX <= (playerX + PLAYER_WIDTH)
                             && bombY >= playerY
                             && bombY <= (playerY + PLAYER_HEIGHT)) {
-                        var ii = new ImageIcon(IMG_EXPLOSION);
-                        player.setImage(ii.getImage());
+                        explosions.add(new Explosion(player.getX(), player.getY(), true));
                         player.setDying(true);
                         bomb.setDestroyed(true);
+                    }
+
+                    if (!bomb.isDestroyed()) {
+                        bomb.setY(bomb.getY() + 1);
+                        if (bomb.getY() >= GROUND - BOMB_HEIGHT) {
+                            bomb.setDestroyed(true);
+                        }
                     }
                 }
             }
