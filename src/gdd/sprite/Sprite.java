@@ -80,4 +80,16 @@ abstract public class Sprite {
     public boolean isDying() {
         return this.dying;
     }
+
+    public int getImageWidth() {
+        return image != null ? image.getWidth(null) : 0;
+    }
+
+    public int getImageHeight() {
+        return image != null ? image.getHeight(null) : 0;
+    }
+
+    public void setDestroyed(boolean destroyed) {
+        this.visible = !destroyed;
+    }
 }
