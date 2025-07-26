@@ -1,8 +1,8 @@
 package gdd.sprite;
 
 import static gdd.Global.*;
-import javax.swing.ImageIcon;
 import java.awt.*;
+import javax.swing.ImageIcon;
 
 public class Explosion extends Sprite {
 
@@ -96,3 +96,4 @@ public class Explosion extends Sprite {
         return visible;
     }
 }
+ 

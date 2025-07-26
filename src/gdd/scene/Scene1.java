@@ -416,14 +416,14 @@ public class Scene1 extends JPanel {
                         if (enemy instanceof Boss) {
                             ((Boss) enemy).takeHit();
                             score += 100;
-                            explosions.add(new Explosion(enemyX, enemyY));
+                            explosions.add(new Explosion(enemyX, enemyHeight, false));
                         } else {
                             var ii = new ImageIcon(IMG_EXPLOSION);
                             enemy.setImage(ii.getImage());
                             enemy.setDying(true);
                             deaths++;
                             score += 100;
-                            explosions.add(new Explosion(enemyX, enemyY));
+                            explosions.add(new Explosion(enemyX, enemyY, true));
                         }
 
                         shot.die();
