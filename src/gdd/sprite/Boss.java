@@ -95,4 +95,8 @@ public class Boss extends Enemy {
             setDestroyed(true);
         }
     }
+
+    public boolean isDead() {
+        return health <= 0;
+    }
 }

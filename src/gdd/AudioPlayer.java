@@ -29,8 +29,7 @@ public class AudioPlayer {
             IOException, LineUnavailableException {
         // create AudioInputStream object
         this.filePath = filePath;
-        audioInputStream
-                = AudioSystem.getAudioInputStream(new File(filePath).getAbsoluteFile());
+        audioInputStream = AudioSystem.getAudioInputStream(new File(filePath).getAbsoluteFile());
 
         // create clip reference
         clip = AudioSystem.getClip();
@@ -39,6 +38,27 @@ public class AudioPlayer {
         clip.open(audioInputStream);
 
         clip.loop(Clip.LOOP_CONTINUOUSLY);
+
+        // if (loop) {
+        //     clip.loop(Clip.LOOP_CONTINUOUSLY);
+        // }
+    }
+
+    public class SoundUtils {
+
+        public static void playSoundOnce(String path) {
+            new Thread(() -> {
+                try {
+                    File soundFile = new File(path);
+                    AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
+                    Clip clip = AudioSystem.getClip();
+                    clip.open(audioIn);
+                    clip.start();
+                } catch (Exception e) {
+                    System.err.println("Error playing sound: " + e.getMessage());
+                }
+            }).start();
+        }
     }
 
     public static void main(String[] args) {
@@ -104,7 +124,6 @@ public class AudioPlayer {
 
         status = "play";
     }
-
 
     // Method to pause the audio
     public void pause() {

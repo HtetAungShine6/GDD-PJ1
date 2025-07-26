@@ -14,6 +14,7 @@ public class Global {
 
     public static final int GROUND = 580; // Doubled from 290
     public static final int BOMB_HEIGHT = 10; // Doubled from 5
+    public static final int BOMB_WIDTH = 10;
 
     public static final int ALIEN_HEIGHT = 24; // Doubled from 12
     public static final int ALIEN_WIDTH = 24; // Doubled from 12
