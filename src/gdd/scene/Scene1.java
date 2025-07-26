@@ -418,12 +418,12 @@ public class Scene1 extends JPanel {
                             score += 100;
                             explosions.add(new Explosion(enemyX, enemyHeight, false));
                         } else {
-                            var ii = new ImageIcon(IMG_EXPLOSION);
-                            enemy.setImage(ii.getImage());
+//                            var ii = new ImageIcon(IMG_EXPLOSION);
+//                            enemy.setImage(ii.getImage());
                             enemy.setDying(true);
                             deaths++;
                             score += 100;
-                            explosions.add(new Explosion(enemyX, enemyY, true));
+                            explosions.add(new Explosion(enemyX, enemyY, false));
                         }
 
                         shot.die();
