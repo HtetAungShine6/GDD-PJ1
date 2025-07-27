@@ -30,18 +30,17 @@ public class Global {
     public static final int DELAY = 17;
     public static final int PLAYER_WIDTH = 10; // Doubled from 15
     public static final int PLAYER_HEIGHT = 20; // Doubled from 10
+    public static final int ROCK_WIDTH = 40;  // or your rock image width
+    public static final int ROCK_HEIGHT = 40;
+
 
     // Images
     public static final String IMG_ENEMY = "src/images/alienType1.png";
     public static final String IMG_ENEMY2 = "src/images/alienType2.png";
     public static final String IMG_PLAYER = "src/images/player.png";
     public static final String IMG_SHOT = "src/images/shoot.png";
-    public static final String IMG_EXPLOSION = "src/images/explosion.png";
     public static final String IMG_TITLE = "src/images/title.png";
 
-    // public static final String IMG_POWERUP_SPEEDUP = "src/images/powerup-s.png";
-    // public static final String IMG_POWERUP_MULTISHOT =
-    // "src/images/powerup-m.png";
     public static final String IMG_BOSS = "src/images/boss1.png";
 
     public static final String IMG_POWERUP_SPEEDUP = "src/images/speedUp.png";
