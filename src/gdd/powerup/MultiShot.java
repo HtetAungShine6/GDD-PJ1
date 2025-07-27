@@ -2,6 +2,8 @@
 package gdd.powerup;
 
 import static gdd.Global.*;
+
+import gdd.AudioPlayer;
 import gdd.sprite.Player;
 import javax.swing.ImageIcon;
 
@@ -27,6 +29,7 @@ public class MultiShot extends PowerUp {
     @Override
     public void upgrade(Player player) {
         if (player.upgradeMultishot()) {
+            AudioPlayer.SoundUtils.playSoundOnce("src/audio/levelup.wav");
             // optionally play upgrade sound
         } else {
             // optionally play “max level” sound or show visual feedback

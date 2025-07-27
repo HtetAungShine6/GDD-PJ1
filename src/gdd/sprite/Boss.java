@@ -19,6 +19,14 @@ public class Boss extends Enemy {
     private List<Bomb> bombs;
     private int bombDropDelay = 100;
     private int bombDropTimer = 0;
+    private List<Rock> rocks = new ArrayList<>();
+    private int rockDropTimer = 0;
+    private int rockDropDelay = 100;
+
+    public List<Rock> getRocks() {
+        return rocks;
+    }
+
 
     public Boss(int x, int y) {
         super(x, y);
@@ -43,7 +51,9 @@ public class Boss extends Enemy {
 
         this.phase = Math.random() * Math.PI * 2;
         this.bombs = new ArrayList<>();
+        this.rocks = new ArrayList<>();
     }
+
 
     @Override
     public void act(int ignoredDirection) {
@@ -69,6 +79,32 @@ public class Boss extends Enemy {
             bombs.add(new Bomb(this.x + getImageWidth() / 2, this.y + getImageHeight()));
             bombDropTimer = 0;
         }
+        // Drop rocks
+        rockDropTimer++;
+        if (rockDropTimer >= rockDropDelay) {
+            if (rocks.size() < 9) { // allow more total on screen
+                int rocksToDrop = 3;
+                for (int i = 0; i < rocksToDrop; i++) {
+                    int offsetX = (int)(Math.random() * getImageWidth()) - getImageWidth() / 2;
+                    int rockX = this.x + getImageWidth() / 2 + offsetX;
+                    int rockY = this.y + getImageHeight();
+                    rocks.add(new Rock(rockX, rockY));
+                }
+            }
+            rockDropTimer = 0;
+        }
+
+
+        List<Rock> toRemove = new ArrayList<>();
+        for (Rock r : rocks) {
+            if (r.isVisible()) {
+                r.act();
+            } else {
+                toRemove.add(r);
+            }
+        }
+        rocks.removeAll(toRemove);
+
 
         // Update bombs
         for (Bomb b : bombs) {
@@ -98,5 +134,9 @@ public class Boss extends Enemy {
 
     public boolean isDead() {
         return health <= 0;
+    }
+
+    public int getHealth() {
+        return health;
     }
 }

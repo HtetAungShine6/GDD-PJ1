@@ -10,6 +10,7 @@ import gdd.powerup.SpeedUp;
 import gdd.sprite.Alien1;
 import gdd.sprite.Alien2;
 import gdd.sprite.Bomb;
+import gdd.sprite.Rock;
 import gdd.sprite.Boss;
 import gdd.sprite.Enemy;
 import gdd.sprite.Explosion;
@@ -27,6 +28,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -111,7 +114,7 @@ public class Scene1 extends JPanel {
     }
 
     private void initBoard() {
-        loadSpawnDetailsFromCSV("src/map/scene2_spawn.csv");
+        loadSpawnDetailsFromCSV("src/map/scene1_spawn.csv");
         background = new ImageIcon("src/images/lvl1.png").getImage();
     }
 
@@ -204,7 +207,7 @@ public class Scene1 extends JPanel {
         }
     }
 
-    private void drawPlayer(Graphics g) {
+    private void drawPlayer(Graphics g) throws UnsupportedAudioFileException, LineUnavailableException, IOException {
         if (player.isVisible()) {
             g.drawImage(player.getImage(), player.getX(), player.getY(), this);
         }
@@ -220,6 +223,10 @@ public class Scene1 extends JPanel {
             }
 
             if (explosionDone) {
+                if (audioPlayer != null) {
+                    audioPlayer.stop();
+                }
+                AudioPlayer.SoundUtils.playSoundOnce("src/audio/gameOver.wav");
                 inGame = false;
             }
         }
@@ -240,6 +247,11 @@ public class Scene1 extends JPanel {
                 for (Bomb b : boss.getBombs()) {
                     if (!b.isDestroyed()) {
                         g.drawImage(b.getImage(), b.getX(), b.getY(), this);
+                    }
+                }
+                for (Rock r : boss.getRocks()) {
+                    if (r.isVisible()) {
+                        g.drawImage(r.getImage(), r.getX(), r.getY(), this);
                     }
                 }
             } else {
@@ -269,10 +281,43 @@ public class Scene1 extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        doDrawing(g);
+        try {
+            doDrawing(g);
+        } catch (UnsupportedAudioFileException e) {
+            throw new RuntimeException(e);
+        } catch (LineUnavailableException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    private void drawBossHealthBar(Graphics g) {
+        for (Enemy enemy : enemies) {
+            if (enemy instanceof Boss boss && boss.isVisible()) {
+                int maxHealth = 10; // change if you set different health
+                int currentHealth = boss.getHealth();
+                int barWidth = 200;
+                int barHeight = 15;
+                int x = (BOARD_WIDTH - barWidth) / 2;
+                int y = 30;
+
+                // Background
+                g.setColor(Color.GRAY);
+                g.fillRect(x, y, barWidth, barHeight);
+
+                // Health
+                g.setColor(Color.RED);
+                g.fillRect(x, y, (int) ((currentHealth / (double) maxHealth) * barWidth), barHeight);
+
+                // Border
+                g.setColor(Color.WHITE);
+                g.drawRect(x, y, barWidth, barHeight);
+            }
+        }
     }
 
-    private void doDrawing(Graphics g) {
+
+    private void doDrawing(Graphics g) throws UnsupportedAudioFileException, LineUnavailableException, IOException {
         g.drawImage(background, 0, 0, d.width, d.height, this);
 
         g.setColor(Color.white);
@@ -292,9 +337,14 @@ public class Scene1 extends JPanel {
             drawPlayer(g);
             drawShot(g);
             drawBombing(g);
+            drawBossHealthBar(g);
         } else if (inGame && bossDefeated) {
             inGame = false;
             timer.stop();
+            if (audioPlayer != null) {
+                audioPlayer.stop();
+            }
+            AudioPlayer.SoundUtils.playSoundOnce("src/audio/victory.wav");
             message = "🎉 Victory! You defeated the Boss!";
             gameVictory(g);
         } else {
@@ -365,7 +415,7 @@ public class Scene1 extends JPanel {
         }
     }
 
-    private Image bossBackground = new ImageIcon("src/images/boss_background.png").getImage();
+    private final Image bossBackground = new ImageIcon("src/images/boss-background.png").getImage();
 
     private boolean areAllEnemiesDead() {
         for (Enemy enemy : enemies) {
@@ -428,7 +478,7 @@ public class Scene1 extends JPanel {
         }
 
         if (bossSpawned && background != bossBackground) {
-            background = new ImageIcon("src/images/boss_background.png").getImage();
+            background = bossBackground;
             changeMusic("src/audio/bossFight_sound.wav");
         }
 
@@ -500,6 +550,7 @@ public class Scene1 extends JPanel {
                             Boss boss = (Boss) enemy;
                             boss.takeHit();
                             score += 100;
+                            AudioPlayer.SoundUtils.playSoundOnce("src/audio/explosion.wav");
                             explosions.add(new Explosion(enemyX, enemyHeight, false));
                             if (boss.isDead()) {  // You need this method in Boss
                                 boss.setDying(true);  // Mark it dead
@@ -512,6 +563,7 @@ public class Scene1 extends JPanel {
                             enemy.setDying(true);
                             deaths++;
                             score += 100;
+                            AudioPlayer.SoundUtils.playSoundOnce("src/audio/explosion.wav");
                             explosions.add(new Explosion(enemyX, enemyY, false));
                         }
 
@@ -560,7 +612,7 @@ public class Scene1 extends JPanel {
             if (enemy instanceof Boss) {
                 Boss boss = (Boss) enemy;
                 for (Bomb bomb : boss.getBombs()) {
-                    int chance = randomizer.nextInt(50); // less frequent
+                    int chance = randomizer.nextInt(30); // less frequent
 
                     if (chance == CHANCE && bomb.isDestroyed() && boss.isVisible()) {
                         bomb.setDestroyed(false);
@@ -597,9 +649,40 @@ public class Scene1 extends JPanel {
                         }
                     }
                 }
+                        for (Rock rock : boss.getRocks()) {
+                            if (!rock.isVisible()) continue;
+
+                            // Move rock
+                            rock.act();
+
+                            // Check collision with player
+                            int rockX = rock.getX();
+                            int rockY = rock.getY();
+                            int playerX = player.getX();
+                            int playerY = player.getY();
+
+                            if (player.isVisible()
+                                    && rockX + ROCK_WIDTH >= playerX
+                                    && rockX <= playerX + PLAYER_WIDTH
+                                    && rockY + ROCK_HEIGHT >= playerY
+                                    && rockY <= playerY + PLAYER_HEIGHT) {
+
+                                explosions.add(new Explosion(playerX, playerY, true));
+                                AudioPlayer.SoundUtils.playSoundOnce("src/audio/player-explosion.wav");
+                                player.setDying(true);
+                                rock.setVisible(false);
+                            }
+
+                            if (rockY > GROUND) {
+                                rock.setVisible(false);
+                            }
+
+
+                }
+
             } else {
                 Bomb bomb = enemy.getBomb();
-                int chance = randomizer.nextInt(15);
+                int chance = randomizer.nextInt(50);
                 if (chance == CHANCE && enemy.isVisible() && bomb.isDestroyed()) {
                     bomb.setDestroyed(false);
                     int alienCenterX = enemy.getX() + enemy.getImage().getWidth(null) / 2;
@@ -625,6 +708,7 @@ public class Scene1 extends JPanel {
                             && bombY + BOMB_HEIGHT >= playerY
                             && bombY <= (playerY + PLAYER_HEIGHT)) {
                         explosions.add(new Explosion(player.getX(), player.getY(), true));
+                        AudioPlayer.SoundUtils.playSoundOnce("src/audio/player-explosion.wav");
                         player.setDying(true);
                         bomb.setDestroyed(true);
                     }
@@ -674,7 +758,7 @@ public class Scene1 extends JPanel {
 
             if (key == KeyEvent.VK_SPACE && inGame) {
 
-                AudioPlayer.SoundUtils.playSoundOnce("src/audio/playerShotSound.wav");
+                AudioPlayer.SoundUtils.playSoundOnce("src/audio/laser.wav");
 
                 int multishotLevel = player.getMultishotLevel();
                 int centerX = player.getX() + PLAYER_WIDTH / 2;

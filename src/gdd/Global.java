@@ -28,6 +28,9 @@ public class Global {
     public static final int DELAY = 17;
     public static final int PLAYER_WIDTH = 10; // Doubled from 15
     public static final int PLAYER_HEIGHT = 20; // Doubled from 10
+    public static final int ROCK_WIDTH = 40;  // or your rock image width
+    public static final int ROCK_HEIGHT = 40;
+
 
     // Images
     public static final String IMG_ENEMY = "src/images/alienType1.png";

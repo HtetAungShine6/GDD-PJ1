@@ -1,6 +1,8 @@
 package gdd.powerup;
 
 import static gdd.Global.*;
+
+import gdd.AudioPlayer;
 import gdd.sprite.Player;
 import javax.swing.ImageIcon;
 
@@ -32,6 +34,7 @@ public class SpeedUp extends PowerUp {
 
     public void upgrade(Player player) {
         // Upgrade the player with speed boost
+        AudioPlayer.SoundUtils.playSoundOnce("src/audio/levelup.wav");
         player.setSpeed(player.getSpeed() + 6); // Increase player's speed by 4
         this.die(); // Remove the power-up after use
     }

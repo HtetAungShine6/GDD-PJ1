@@ -2,5 +2,6 @@ frame,type,x,y
 50,PowerUp-SpeedUp,100,0
 200,Alien1,200,0
 201,Alien2,250,0
+250,PowerUp-Multishot,200,0
 300,Alien1,300,0
 700,Boss,200,0
