@@ -16,16 +16,9 @@ public class DirectionalBomb extends Bomb {
         this.exactX = x;
         this.exactY = y;
 
-        // Normalize direction vector and set speed
-        double magnitude = Math.sqrt(directionX * directionX + directionY * directionY);
-        if (magnitude > 0) {
-            this.velocityX = (directionX / magnitude) * 2.0; // Speed of 2 pixels per frame
-            this.velocityY = (directionY / magnitude) * 2.0;
-        } else {
-            // Default to downward movement if no direction given
-            this.velocityX = 0;
-            this.velocityY = 2.0;
-        }
+        // Use direction values directly as velocities, doubled for faster movement
+        this.velocityX = directionX;
+        this.velocityY = directionY * 2.0;
     }
 
     @Override

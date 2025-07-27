@@ -2,7 +2,6 @@ package gdd.sprite;
 
 import static gdd.Global.*;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
 import javax.swing.ImageIcon;
 
@@ -16,7 +15,6 @@ public class Boss extends Enemy {
     private int frameCount = 0;
     private int direction = 1;
     private int health = 10;
-    private List<Bomb> bombs;
     private int bombDropDelay = 100;
     private int bombDropTimer = 0;
 
@@ -35,14 +33,17 @@ public class Boss extends Enemy {
             animationFrames[i] = ii.getImage().getScaledInstance(
                     scaledWidth,
                     scaledHeight,
-                    java.awt.Image.SCALE_SMOOTH
-            );
+                    java.awt.Image.SCALE_SMOOTH);
         }
 
         setImage(animationFrames[0]);
 
         this.phase = Math.random() * Math.PI * 2;
-        this.bombs = new ArrayList<>();
+
+        bombs.clear(); // Remove the default bomb
+        for (int i = 0; i < 5; i++) {
+            bombs.add(new Bomb(x, y));
+        }
     }
 
     @Override
@@ -85,8 +86,9 @@ public class Boss extends Enemy {
         }
     }
 
+    @Override
     public List<Bomb> getBombs() {
-        return bombs;
+        return super.getBombs();
     }
 
     public void hit() {

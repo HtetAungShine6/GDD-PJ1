@@ -9,24 +9,24 @@ public class Alien1 extends Enemy {
     // private Bomb bomb;
     private Image[] animationFrames;
     private int currentFrame = 0;
-    private int frameDelay = 16; // Controls how fast it changes frame
-    private int frameCount = 0; // Counts how many act() calls passed
+    private int frameDelay = 16;
+    private int frameCount = 0;
 
     // Movement timing
     private int movementTimer = 0;
-    private int movementInterval = 3; // Move every 3 frames for slower movement
+    private int movementInterval = 3;
 
     public Alien1(int x, int y) {
         super(x, y);
         initEnemy(x, y);
+        // Set Alien1 to shoot every 4 seconds
+        setBombInterval(4);
     }
 
     private void initEnemy(int x, int y) {
 
         this.x = x;
         this.y = y;
-
-        bomb = new Bomb(x, y);
 
         animationFrames = new Image[5];
 
@@ -49,13 +49,10 @@ public class Alien1 extends Enemy {
 
     @Override
     public void act(int direction) {
-        // Increment movement timer
         movementTimer++;
 
-        // Move every 3 frames for slower movement
         if (movementTimer >= movementInterval) {
-            movementTimer = 0; // Reset timer
-            // Type 1: Move straight downward
+            movementTimer = 0;
             this.y++;
         }
 
@@ -66,15 +63,10 @@ public class Alien1 extends Enemy {
             currentFrame = (currentFrame + 1) % animationFrames.length;
             setImage(animationFrames[currentFrame]);
         }
-
-        // Bomb moves straight down when active
-        if (bomb != null && !bomb.isDestroyed()) {
-            bomb.act();
-        }
     }
 
     @Override
     public Bomb getBomb() {
-        return bomb;
+        return super.getBomb();
     }
 }

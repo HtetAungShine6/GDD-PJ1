@@ -15,11 +15,12 @@ public class Alien2 extends Enemy {
 
     public Alien2(int x, int y) {
         super(x, y);
+        // Set Alien2 to shoot every 8 seconds
+        setBombInterval(8);
         this.exactX = x;
         this.exactY = y;
-
-        // Initialize directional bomb instead of regular bomb
-        bomb = new DirectionalBomb(x, y, 0, 1);
+        bombs.clear();
+        bombs.add(new DirectionalBomb(x, y, 0, 1));
 
         // Load direction-specific images
         ImageIcon rightIcon = new ImageIcon("src/images/alienType2_r.png");
@@ -63,29 +64,26 @@ public class Alien2 extends Enemy {
             facingRight = !facingRight;
             setImage(facingRight ? rightFacingImage : leftFacingImage);
         }
-
-        // Update bomb with current direction
-        if (bomb != null && !bomb.isDestroyed()) {
-            bomb.act();
-        }
     }
 
     @Override
     public Bomb getBomb() {
-        return bomb;
+        return super.getBomb();
     }
 
     public DirectionalBomb createDirectionalBomb() {
         int bombStartX = this.x + getImageWidth() / 2;
         int bombStartY = this.y + getImageHeight();
-        double bombDirectionX = facingRight ? 2.0 : -2.0;
+        // Set bomb direction to match alien's movement
+        double bombDirectionX = facingRight ? 1.0 : -1.0;
         double bombDirectionY = 1.0;
 
         return new DirectionalBomb(bombStartX, bombStartY, bombDirectionX, bombDirectionY);
     }
 
     public void setDirectionalBomb(DirectionalBomb newBomb) {
-        this.bomb = newBomb;
+        bombs.clear();
+        bombs.add(newBomb);
     }
 
 }
