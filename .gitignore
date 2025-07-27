@@ -1,7 +1,5 @@
 *.jar
 *.class
 
-# Large audio files
-*.wav
-src/audio/
+# Large audio file
 out/production/

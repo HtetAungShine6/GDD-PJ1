@@ -37,11 +37,8 @@ public class Global {
     public static final String IMG_ENEMY2 = "src/images/alienType2.png";
     public static final String IMG_PLAYER = "src/images/player.png";
     public static final String IMG_SHOT = "src/images/shoot.png";
-    public static final String IMG_EXPLOSION = "src/images/explosion.png";
     public static final String IMG_TITLE = "src/images/title.png";
 
-    // public static final String IMG_POWERUP_SPEEDUP = "src/images/powerup-s.png";
-    // public static final String IMG_POWERUP_MULTISHOT = "src/images/powerup-m.png";
     public static final String IMG_BOSS = "src/images/boss1.png";
 
     public static final String IMG_POWERUP_SPEEDUP = "src/images/speedUp.png";
