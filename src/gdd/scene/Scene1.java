@@ -11,6 +11,7 @@ import gdd.sprite.Alien1;
 import gdd.sprite.Alien2;
 import gdd.sprite.Bomb;
 import gdd.sprite.Boss;
+import gdd.sprite.DirectionalBomb;
 import gdd.sprite.Enemy;
 import gdd.sprite.Explosion;
 import gdd.sprite.Player;
@@ -41,6 +42,9 @@ public class Scene1 extends JPanel {
     private Player player;
     private int score = 0;
     private Image background;
+    private int backgroundY = 0; // For vertical scrolling
+    private double backgroundScrollSpeed = 0.6; // Pixels per frame for 5-minute stages
+    private double backgroundPosition = 0.0; // Precise position tracking
 
     // private Shot shot;
     final int BLOCKHEIGHT = 50;
@@ -112,7 +116,7 @@ public class Scene1 extends JPanel {
 
     private void initBoard() {
         loadSpawnDetailsFromCSV("src/map/scene2_spawn.csv");
-        background = new ImageIcon("src/images/lvl1.png").getImage();
+        background = new ImageIcon("src/images/stage1Background.png").getImage();
     }
 
     public void start() {
@@ -210,7 +214,7 @@ public class Scene1 extends JPanel {
         }
         if (player.isDying()) {
             player.die();
-//            inGame = false;
+            // inGame = false;
             boolean explosionDone = true;
             for (Explosion ex : explosions) {
                 if (ex.isVisible()) {
@@ -273,7 +277,16 @@ public class Scene1 extends JPanel {
     }
 
     private void doDrawing(Graphics g) {
-        g.drawImage(background, 0, 0, d.width, d.height, this);
+        // Draw scrolling background
+        if (bossSpawned) {
+            // Draw boss background with scrolling
+            g.drawImage(bossBackground, 0, bossBackgroundY, d.width, d.height, this);
+            g.drawImage(bossBackground, 0, bossBackgroundY - d.height, d.width, d.height, this);
+        } else {
+            // Draw normal background with scrolling
+            g.drawImage(background, 0, backgroundY, d.width, d.height, this);
+            g.drawImage(background, 0, backgroundY - d.height, d.width, d.height, this);
+        }
 
         g.setColor(Color.white);
         g.drawString("FRAME: " + frame, 90, 60);
@@ -365,7 +378,9 @@ public class Scene1 extends JPanel {
         }
     }
 
-    private Image bossBackground = new ImageIcon("src/images/boss_background.png").getImage();
+    private Image bossBackground = new ImageIcon("src/images/bossFightBackground.png").getImage();
+    private int bossBackgroundY = 0; // For boss background vertical scrolling
+    private double bossBackgroundPosition = 0.0; // Precise position tracking for boss background
 
     private boolean areAllEnemiesDead() {
         for (Enemy enemy : enemies) {
@@ -377,6 +392,24 @@ public class Scene1 extends JPanel {
     }
 
     private void update() {
+        // Update background scrolling with precise positioning for 5-minute stages
+        backgroundPosition += backgroundScrollSpeed;
+        backgroundY = (int) backgroundPosition;
+        if (backgroundY >= d.height) {
+            backgroundY = backgroundY - d.height;
+            backgroundPosition = backgroundPosition - d.height;
+        }
+
+        // Update boss background scrolling
+        if (bossSpawned) {
+            bossBackgroundPosition += backgroundScrollSpeed;
+            bossBackgroundY = (int) bossBackgroundPosition;
+            if (bossBackgroundY >= d.height) {
+                bossBackgroundY = bossBackgroundY - d.height;
+                bossBackgroundPosition = bossBackgroundPosition - d.height;
+            }
+        }
+
         // Check enemy spawn
         // TODO this approach can only spawn one enemy at a frame
         SpawnDetails sd = spawnMap.get(frame);
@@ -392,6 +425,8 @@ public class Scene1 extends JPanel {
 
             if (bossSpawned && background != bossBackground) {
                 background = bossBackground;
+                bossBackgroundY = 0; // Reset boss background position
+                bossBackgroundPosition = 0.0; // Reset precise position
                 changeMusic("src/audio/bossFight_sound.wav");
             }
 
@@ -428,7 +463,9 @@ public class Scene1 extends JPanel {
         }
 
         if (bossSpawned && background != bossBackground) {
-            background = new ImageIcon("src/images/boss_background.png").getImage();
+            background = new ImageIcon("src/images/bossFightBackground.png").getImage();
+            bossBackgroundY = 0; // Reset boss background position
+            bossBackgroundPosition = 0.0; // Reset precise position
             changeMusic("src/audio/bossFight_sound.wav");
         }
 
@@ -501,14 +538,14 @@ public class Scene1 extends JPanel {
                             boss.takeHit();
                             score += 100;
                             explosions.add(new Explosion(enemyX, enemyHeight, false));
-                            if (boss.isDead()) {  // You need this method in Boss
-                                boss.setDying(true);  // Mark it dead
+                            if (boss.isDead()) { // You need this method in Boss
+                                boss.setDying(true); // Mark it dead
                                 bossDefeated = true;
                                 timer.stop();
                             }
                         } else {
-//                            var ii = new ImageIcon(IMG_EXPLOSION);
-//                            enemy.setImage(ii.getImage());
+                            // var ii = new ImageIcon(IMG_EXPLOSION);
+                            // enemy.setImage(ii.getImage());
                             enemy.setDying(true);
                             deaths++;
                             score += 100;
@@ -600,17 +637,40 @@ public class Scene1 extends JPanel {
             } else {
                 Bomb bomb = enemy.getBomb();
                 int chance = randomizer.nextInt(15);
+
                 if (chance == CHANCE && enemy.isVisible() && bomb.isDestroyed()) {
-                    bomb.setDestroyed(false);
-                    int alienCenterX = enemy.getX() + enemy.getImage().getWidth(null) / 2;
-                    int alienBottomY = enemy.getY() + enemy.getImage().getHeight(null);
-                    bomb.setX(alienCenterX);
-                    bomb.setY(alienBottomY);
+                    // Handle different bomb types for different enemy types
+                    if (enemy instanceof Alien2) {
+                        // Alien2: Create directional bomb
+                        Alien2 alien2 = (Alien2) enemy;
+                        DirectionalBomb dirBomb = alien2.createDirectionalBomb();
+                        dirBomb.setDestroyed(false); // Activate the bomb
+                        // Replace the old bomb with the new directional bomb
+                        alien2.setDirectionalBomb(dirBomb);
+                        bomb = dirBomb;
+                    } else {
+                        // Alien1: Create straight-down bomb (existing behavior)
+                        bomb.setDestroyed(false);
+                        int alienCenterX = enemy.getX() + enemy.getImage().getWidth(null) / 2;
+                        int alienBottomY = enemy.getY() + enemy.getImage().getHeight(null);
+                        bomb.setX(alienCenterX);
+                        bomb.setY(alienBottomY);
+                    }
                 }
 
                 if (!bomb.isDestroyed()) {
-                    bomb.setY(bomb.getY() + 1);
-                    if (bomb.getY() >= GROUND - BOMB_HEIGHT) {
+                    // Different movement for different bomb types
+                    if (bomb instanceof DirectionalBomb) {
+                        // DirectionalBomb handles its own movement
+                        bomb.act();
+                    } else {
+                        // Regular bomb moves straight down
+                        bomb.setY(bomb.getY() + 1);
+                    }
+
+                    // Check if bomb is out of bounds
+                    if (bomb.getY() >= GROUND - BOMB_HEIGHT ||
+                            bomb.getX() < -50 || bomb.getX() > BOARD_WIDTH + 50) {
                         bomb.setDestroyed(true);
                     }
 
@@ -629,7 +689,8 @@ public class Scene1 extends JPanel {
                         bomb.setDestroyed(true);
                     }
 
-                    if (!bomb.isDestroyed()) {
+                    // Additional movement only for regular bombs (not directional bombs)
+                    if (!bomb.isDestroyed() && !(bomb instanceof DirectionalBomb)) {
                         bomb.setY(bomb.getY() + 1);
                         if (bomb.getY() >= GROUND - BOMB_HEIGHT) {
                             bomb.setDestroyed(true);

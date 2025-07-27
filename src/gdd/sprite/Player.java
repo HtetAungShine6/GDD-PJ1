@@ -11,6 +11,7 @@ public class Player extends Sprite {
     private static final int START_X = 270;
     private static final int START_Y = 540;
     private int width;
+    private int height;
     private int currentSpeed = 2;
     private int multishotLevel = 1;
     private int shotLevel = 1;
@@ -35,13 +36,9 @@ public class Player extends Sprite {
         }
         setImage(multishotImages[0]);
 
-//        var ii = new ImageIcon(IMG_PLAYER);
-//
-//        // Scale the image to use the global scaling factor
-//        var scaledImage = ii.getImage().getScaledInstance(ii.getIconWidth() * SCALE_FACTOR,
-//                ii.getIconHeight() * SCALE_FACTOR,
-//                java.awt.Image.SCALE_SMOOTH);
-//        setImage(scaledImage);
+        // Initialize width and height based on the scaled image
+        width = multishotImages[0].getWidth(null);
+        height = multishotImages[0].getHeight(null);
 
         setX(START_X);
         setY(START_Y);
@@ -82,16 +79,29 @@ public class Player extends Sprite {
         return false;
     }
 
-
     public void act() {
         x += dx;
+        y += dy;
 
-        if (x <= 2) {
-            x = 2;
+        // Left boundary check - use the same boundary as aliens
+        if (x <= BORDER_LEFT) {
+            x = BORDER_LEFT;
         }
 
-        if (x >= BOARD_WIDTH - 2 * width) {
-            x = BOARD_WIDTH - 2 * width;
+        // Right boundary check - use the same boundary as aliens, accounting for player
+        // width
+        if (x >= BOARD_WIDTH - BORDER_RIGHT - width) {
+            x = BOARD_WIDTH - BORDER_RIGHT - width;
+        }
+
+        // Top boundary check
+        if (y <= BORDER_TOP) {
+            y = BORDER_TOP;
+        }
+
+        // Bottom boundary check - accounting for player height
+        if (y >= BOARD_HEIGHT - BORDER_BOTTOM - height) {
+            y = BOARD_HEIGHT - BORDER_BOTTOM - height;
         }
     }
 
@@ -105,6 +115,14 @@ public class Player extends Sprite {
         if (key == KeyEvent.VK_RIGHT) {
             dx = currentSpeed;
         }
+
+        if (key == KeyEvent.VK_UP) {
+            dy = -currentSpeed;
+        }
+
+        if (key == KeyEvent.VK_DOWN) {
+            dy = currentSpeed;
+        }
     }
 
     public void keyReleased(KeyEvent e) {
@@ -116,6 +134,14 @@ public class Player extends Sprite {
 
         if (key == KeyEvent.VK_RIGHT) {
             dx = 0;
+        }
+
+        if (key == KeyEvent.VK_UP) {
+            dy = 0;
+        }
+
+        if (key == KeyEvent.VK_DOWN) {
+            dy = 0;
         }
     }
 }
