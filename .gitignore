@@ -1,2 +1,7 @@
 *.jar
 *.class
+
+# Large audio files
+*.wav
+src/audio/
+out/production/
