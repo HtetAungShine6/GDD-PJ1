@@ -9,20 +9,24 @@ public class Alien1 extends Enemy {
     // private Bomb bomb;
     private Image[] animationFrames;
     private int currentFrame = 0;
-    private int frameDelay = 16;  // Controls how fast it changes frame
-    private int frameCount = 0;  // Counts how many act() calls passed
+    private int frameDelay = 16;
+    private int frameCount = 0;
+
+    // Movement timing
+    private int movementTimer = 0;
+    private int movementInterval = 3;
 
     public Alien1(int x, int y) {
         super(x, y);
         initEnemy(x, y);
+        // Set Alien1 to shoot every 4 seconds
+        setBombInterval(4);
     }
 
     private void initEnemy(int x, int y) {
 
         this.x = x;
         this.y = y;
-
-        bomb = new Bomb(x, y);
 
         animationFrames = new Image[5];
 
@@ -31,14 +35,13 @@ public class Alien1 extends Enemy {
             String filePath = i == 0 ? "src/images/alienType1.png" : "src/images/alienType1-" + i + ".png";
             ImageIcon ii = new ImageIcon(filePath);
 
-            int scaledWidth = (int)(ii.getIconWidth() * SCALE_FACTOR );
-            int scaledHeight = (int)(ii.getIconHeight() * SCALE_FACTOR);
+            int scaledWidth = (int) (ii.getIconWidth() * SCALE_FACTOR);
+            int scaledHeight = (int) (ii.getIconHeight() * SCALE_FACTOR);
 
             animationFrames[i] = ii.getImage().getScaledInstance(
                     scaledWidth,
                     scaledHeight,
-                    java.awt.Image.SCALE_SMOOTH
-            );
+                    java.awt.Image.SCALE_SMOOTH);
         }
 
         setImage(animationFrames[0]);
@@ -46,7 +49,13 @@ public class Alien1 extends Enemy {
 
     @Override
     public void act(int direction) {
-        this.y++;
+        movementTimer++;
+
+        if (movementTimer >= movementInterval) {
+            movementTimer = 0;
+            this.y++;
+        }
+
         // Animate
         frameCount++;
         if (frameCount >= frameDelay) {
@@ -54,14 +63,10 @@ public class Alien1 extends Enemy {
             currentFrame = (currentFrame + 1) % animationFrames.length;
             setImage(animationFrames[currentFrame]);
         }
-
-        if (bomb != null && !bomb.isDestroyed()) {
-            bomb.act();
-        }
     }
 
     @Override
     public Bomb getBomb() {
-        return bomb;
+        return super.getBomb();
     }
 }
