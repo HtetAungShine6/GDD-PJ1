@@ -4,6 +4,13 @@ A 2D space shooter game inspired by the classic **Space Invaders**, built using 
 
 ---
 
+## 💻 Members
+- Htet Aung Shine - 6530145
+- Hsu Yee Mon - 6530339
+- Hein Naing Soe - 6530070
+
+---
+
 ## 🚀 Project Overview
 
 **Title**: Space Invaders Java Game  
