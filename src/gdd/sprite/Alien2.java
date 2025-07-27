@@ -3,59 +3,87 @@ package gdd.sprite;
 import static gdd.Global.*;
 import javax.swing.ImageIcon;
 import java.awt.*;
-import java.util.Random;
 
 public class Alien2 extends Enemy {
-    private int speed = 1;
-    private double phase;
-    private Image[] animationFrames;
-    private int currentFrame = 0;
-    private int frameDelay = 16;  // Controls how fast it changes frame
-    private int frameCount = 0;  // Counts how many act() calls passed
+    private Image rightFacingImage;
+    private Image leftFacingImage;
+    private double exactX;
+    private double exactY;
+    private int movementTimer = 0;
+    private int movementInterval = 3;
+    private boolean facingRight = true;
 
     public Alien2(int x, int y) {
         super(x, y);
-        animationFrames = new Image[4];
+        // Set Alien2 to shoot every 8 seconds
+        setBombInterval(8);
+        this.exactX = x;
+        this.exactY = y;
+        bombs.clear();
+        bombs.add(new DirectionalBomb(x, y, 0, 1));
 
-        for (int i = 0; i < 4; i++) {
+        // Load direction-specific images
+        ImageIcon rightIcon = new ImageIcon("src/images/alienType2_r.png");
+        ImageIcon leftIcon = new ImageIcon("src/images/alienType2_l.png");
 
-            //2 khu pl lote htr tl 4 khu lone so 360 lel ny loc <might change cuz it looks ridiculous>
-            String filePath = i == 0 ? "src/images/alienType2.png" : "src/images/alienType2-" + i + ".png";
-            ImageIcon ii = new ImageIcon(filePath);
+        int scaledWidth = (int) (rightIcon.getIconWidth() * SCALE_FACTOR * 0.7);
+        int scaledHeight = (int) (rightIcon.getIconHeight() * SCALE_FACTOR * 0.7);
 
-            int scaledWidth = (int)(ii.getIconWidth() * SCALE_FACTOR * 0.7);
-            int scaledHeight = (int)(ii.getIconHeight() * SCALE_FACTOR * 0.7);
+        rightFacingImage = rightIcon.getImage().getScaledInstance(
+                scaledWidth, scaledHeight, java.awt.Image.SCALE_SMOOTH);
+        leftFacingImage = leftIcon.getImage().getScaledInstance(
+                scaledWidth, scaledHeight, java.awt.Image.SCALE_SMOOTH);
 
-            animationFrames[i] = ii.getImage().getScaledInstance(
-                    scaledWidth,
-                    scaledHeight,
-                    java.awt.Image.SCALE_SMOOTH
-            );
-        }
-
-        setImage(animationFrames[0]);
-
-        this.phase = Math.random() * Math.PI * 2;
+        // Start with a random facing direction and set initial image
+        this.facingRight = Math.random() > 0.5;
+        setImage(facingRight ? rightFacingImage : leftFacingImage);
     }
 
     @Override
     public void act(int direction) {
-        this.y++;
-        if (Math.random() < 0.05) {  // 20% chance
-            this.x += direction * speed;
+        movementTimer++;
+
+        if (movementTimer >= movementInterval) {
+            movementTimer = 0;
+
+            exactY += 1;
+
+            // Move diagonally based on facing direction (2 pixels horizontally)
+            if (facingRight) {
+                exactX += 2;
+            } else {
+                exactX -= 2;
+            }
+
+            this.x = (int) exactX;
+            this.y = (int) exactY;
         }
 
-        // Animate
-        frameCount++;
-        if (frameCount >= frameDelay) {
-            frameCount = 0;
-            currentFrame = (currentFrame + 1) % animationFrames.length;
-            setImage(animationFrames[currentFrame]);
+        // Check for direction change at boundaries and update sprite
+        if (this.x <= BORDER_LEFT || this.x >= BOARD_WIDTH - BORDER_RIGHT) {
+            facingRight = !facingRight;
+            setImage(facingRight ? rightFacingImage : leftFacingImage);
         }
+    }
 
-        if (bomb != null && !bomb.isDestroyed()) {
-            bomb.act();
-        }
+    @Override
+    public Bomb getBomb() {
+        return super.getBomb();
+    }
+
+    public DirectionalBomb createDirectionalBomb() {
+        int bombStartX = this.x + getImageWidth() / 2;
+        int bombStartY = this.y + getImageHeight();
+        // Set bomb direction to match alien's movement
+        double bombDirectionX = facingRight ? 1.0 : -1.0;
+        double bombDirectionY = 1.0;
+
+        return new DirectionalBomb(bombStartX, bombStartY, bombDirectionX, bombDirectionY);
+    }
+
+    public void setDirectionalBomb(DirectionalBomb newBomb) {
+        bombs.clear();
+        bombs.add(newBomb);
     }
 
 }

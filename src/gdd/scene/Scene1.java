@@ -12,6 +12,7 @@ import gdd.sprite.Alien2;
 import gdd.sprite.Bomb;
 import gdd.sprite.Rock;
 import gdd.sprite.Boss;
+import gdd.sprite.DirectionalBomb;
 import gdd.sprite.Enemy;
 import gdd.sprite.Explosion;
 import gdd.sprite.Player;
@@ -44,6 +45,9 @@ public class Scene1 extends JPanel {
     private Player player;
     private int score = 0;
     private Image background;
+    private int backgroundY = 0;
+    private double backgroundScrollSpeed = 0.6;
+    private double backgroundPosition = 0.0;
 
     // private Shot shot;
     final int BLOCKHEIGHT = 50;
@@ -115,7 +119,7 @@ public class Scene1 extends JPanel {
 
     private void initBoard() {
         loadSpawnDetailsFromCSV("src/map/scene1_spawn.csv");
-        background = new ImageIcon("src/images/lvl1.png").getImage();
+        background = new ImageIcon("src/images/stage1Background.png").getImage();
     }
 
     public void start() {
@@ -148,7 +152,6 @@ public class Scene1 extends JPanel {
         powerups = new ArrayList<>();
         explosions = new ArrayList<>();
         shots = new ArrayList<>();
-
         player = new Player();
     }
 
@@ -213,7 +216,7 @@ public class Scene1 extends JPanel {
         }
         if (player.isDying()) {
             player.die();
-//            inGame = false;
+            // inGame = false;
             boolean explosionDone = true;
             for (Explosion ex : explosions) {
                 if (ex.isVisible()) {
@@ -317,8 +320,16 @@ public class Scene1 extends JPanel {
     }
 
 
-    private void doDrawing(Graphics g) throws UnsupportedAudioFileException, LineUnavailableException, IOException {
-        g.drawImage(background, 0, 0, d.width, d.height, this);
+    private void doDrawing(Graphics g)  throws UnsupportedAudioFileException, LineUnavailableException, IOException{
+        if (bossSpawned) {
+            // Draw boss background with scrolling
+            g.drawImage(bossBackground, 0, bossBackgroundY, d.width, d.height, this);
+            g.drawImage(bossBackground, 0, bossBackgroundY - d.height, d.width, d.height, this);
+        } else {
+            // Draw normal background with scrolling
+            g.drawImage(background, 0, backgroundY, d.width, d.height, this);
+            g.drawImage(background, 0, backgroundY - d.height, d.width, d.height, this);
+        }
 
         g.setColor(Color.white);
         g.drawString("FRAME: " + frame, 90, 60);
@@ -326,11 +337,9 @@ public class Scene1 extends JPanel {
         g.setColor(Color.WHITE);
         g.drawString("Score: " + score, 90, 80);
         g.drawString("Speed: " + player.getSpeed(), 90, 100);
-        // g.drawString("Shots: " + player.getShotLevel(), 20, 70);
         g.drawString("Multishot Level: " + player.getMultishotLevel(), 90, 120);
 
         if (inGame && !bossDefeated) {
-            // drawMap(g); // Draw background stars first
             drawExplosions(g);
             drawPowreUps(g);
             drawAliens(g);
@@ -414,78 +423,80 @@ public class Scene1 extends JPanel {
             System.err.println("Failed to change music: " + e.getMessage());
         }
     }
+    private Image bossBackground = new ImageIcon("src/images/bossFightBackground.png").getImage();
+    private int bossBackgroundY = 0;
+    private double bossBackgroundPosition = 0.0;
 
-    private final Image bossBackground = new ImageIcon("src/images/boss-background.png").getImage();
-
-    private boolean areAllEnemiesDead() {
-        for (Enemy enemy : enemies) {
-            if (enemy.isVisible() && !enemy.isDying()) {
-                return false;
-            }
-        }
-        return true;
+    private void spawnBossAfterAlert() {
+        bossSpawned = true;
+        Boss boss = new Boss(BOARD_WIDTH / 2 - 50, 50);
+        enemies.add(boss);
+        background = bossBackground;
+        bossBackgroundY = 0;
+        bossBackgroundPosition = 0.0;
+        changeMusic("src/audio/bossFight_sound.wav");
     }
 
     private void update() {
-        // Check enemy spawn
-        // TODO this approach can only spawn one enemy at a frame
+        backgroundPosition += backgroundScrollSpeed;
+        backgroundY = (int) backgroundPosition;
+        if (backgroundY >= d.height) {
+            backgroundY = backgroundY - d.height;
+            backgroundPosition = backgroundPosition - d.height;
+        }
+
+        // Update boss background scrolling
+        if (bossSpawned) {
+            bossBackgroundPosition += backgroundScrollSpeed;
+            bossBackgroundY = (int) bossBackgroundPosition;
+            if (bossBackgroundY >= d.height) {
+                bossBackgroundY = bossBackgroundY - d.height;
+                bossBackgroundPosition = bossBackgroundPosition - d.height;
+            }
+        }
+
         SpawnDetails sd = spawnMap.get(frame);
         if (sd != null) {
-
-            if (sd.type.equals("Boss")) {
-                bossComing = true;
-                if (areAllEnemiesDead() && !bossSpawned) {
-                    showBossAlert = true;
-                    bossAlertFramesLeft = 180;
-                }
-            }
-
-            if (bossSpawned && background != bossBackground) {
-                background = bossBackground;
-                changeMusic("src/audio/bossFight_sound.wav");
-            }
-
-            // Create a new enemy based on the spawn details
             switch (sd.type) {
                 case "Alien1":
-                    Enemy enemy = new Alien1(sd.x, sd.y);
-                    enemies.add(enemy);
+                    Enemy alien1 = new Alien1(sd.x, sd.y);
+                    enemies.add(alien1);
                     break;
-                // Add more cases for different enemy types if needed
                 case "Alien2":
-                    Enemy enemy2 = new Alien2(sd.x, sd.y);
-                    enemies.add(enemy2);
+                    Enemy alien2 = new Alien2(sd.x, sd.y);
+                    enemies.add(alien2);
+                    break;
+                case "Boss":
+                    // Boss spawning from CSV
+                    if (!bossSpawned) {
+                        showBossAlert = true;
+                        bossAlertFramesLeft = 180; // Show alert for 3 seconds
+                        bossComing = true;
+                    }
                     break;
                 case "PowerUp-SpeedUp":
-                    // Handle speed up item spawn
                     PowerUp speedUp = new SpeedUp(sd.x, sd.y);
                     powerups.add(speedUp);
                     break;
                 case "PowerUp-Multishot":
-                    // Handle multishot item spawn
                     PowerUp multiShot = new MultiShot(sd.x, sd.y);
                     powerups.add(multiShot);
                     break;
-                case "Boss":
-                    bossSpawned = true;
-                    Boss boss = new Boss(sd.x, sd.y);
-                    enemies.add(boss);
-                    break;
                 default:
-                    System.out.println("Unknown enemy type: " + sd.type);
+                    System.out.println("Unknown entity type: " + sd.type);
                     break;
             }
         }
 
-        if (bossSpawned && background != bossBackground) {
-            background = bossBackground;
-            changeMusic("src/audio/bossFight_sound.wav");
-        }
 
+        // Handle boss alert and spawning
         if (showBossAlert && bossAlertFramesLeft > 0) {
             bossAlertFramesLeft--;
             if (bossAlertFramesLeft == 0) {
                 showBossAlert = false;
+                if (bossComing && !bossSpawned) {
+                    spawnBossAfterAlert();
+                }
             }
         }
 
@@ -503,21 +514,101 @@ public class Scene1 extends JPanel {
         }
 
         // Enemies
+        List<Enemy> enemiesToRemove = new ArrayList<>();
         for (Enemy enemy : enemies) {
             if (enemy.isVisible()) {
                 enemy.act(direction);
+
+                // Remove enemies that have gone off the bottom of the screen
+                if (enemy.getY() > BOARD_HEIGHT + 50) {
+                    enemy.die();
+                    enemiesToRemove.add(enemy);
+                }
             } else {
-                Bomb bomb = enemy.getBomb();
-                if (!bomb.isDestroyed()) {
-                    bomb.setY(bomb.getY() + 1);
-                    if (bomb.getY() >= GROUND - BOMB_HEIGHT) {
-                        bomb.setDestroyed(true);
+                if (enemy.isDying()) {
+                    boolean allBombsDestroyed = true;
+                    for (Bomb bomb : enemy.getBombs()) {
+                        if (!bomb.isDestroyed()) {
+                            allBombsDestroyed = false;
+                            break;
+                        }
+                    }
+                    if (allBombsDestroyed) {
+                        enemiesToRemove.add(enemy);
                     }
                 }
             }
         }
+        enemies.removeAll(enemiesToRemove);
 
-        // shot
+        // Handle bomb creation for each enemy type
+        for (Enemy enemy : enemies) {
+            if (enemy.isVisible()) {
+                enemy.updateBombTimer();
+
+                if (enemy instanceof Boss) {
+                    if (randomizer.nextInt(60) == CHANCE) {
+                        Boss boss = (Boss) enemy;
+                        Bomb newBomb = new Bomb(boss.getX() + randomizer.nextInt(60) - 30, boss.getY());
+                        newBomb.setDestroyed(false);
+                        boss.addBomb(newBomb);
+                    }
+                } else if (enemy instanceof Alien2) {
+                    if (enemy.canShootBomb()) {
+                        Alien2 alien2 = (Alien2) enemy;
+                        DirectionalBomb dirBomb = alien2.createDirectionalBomb();
+                        if (dirBomb != null) {
+                            dirBomb.setDestroyed(false);
+                            alien2.addBomb(dirBomb);
+                            enemy.resetBombTimer();
+                        }
+                    }
+                } else {
+                    if (enemy.canShootBomb()) {
+                        int alienCenterX = enemy.getX() + enemy.getImage().getWidth(null) / 2;
+                        int alienBottomY = enemy.getY() + enemy.getImage().getHeight(null);
+                        Bomb newBomb = new Bomb(alienCenterX, alienBottomY);
+                        newBomb.setDestroyed(false);
+                        enemy.addBomb(newBomb);
+                        enemy.resetBombTimer(); // Reset timer after shooting
+                    }
+                }
+            }
+        } // Update all bombs from all enemies
+        for (Enemy enemy : enemies) {
+            for (Bomb bomb : enemy.getBombs()) {
+                if (!bomb.isDestroyed()) {
+                    if (bomb instanceof DirectionalBomb) {
+                        bomb.act();
+                    } else {
+                        bomb.setY(bomb.getY() + 2);
+                    }
+
+                    if (bomb.getY() > BOARD_HEIGHT + 50 ||
+                            bomb.getX() < -50 || bomb.getX() > BOARD_WIDTH + 50) {
+                        bomb.setDestroyed(true);
+                    }
+
+                    // Check collision with player
+                    int bombX = bomb.getX();
+                    int bombY = bomb.getY();
+                    int playerX = player.getX();
+                    int playerY = player.getY();
+
+                    if (player.isVisible() && !bomb.isDestroyed()
+                            && bombX + BOMB_WIDTH >= playerX
+                            && bombX <= (playerX + PLAYER_WIDTH)
+                            && bombY + BOMB_HEIGHT >= playerY
+                            && bombY <= (playerY + PLAYER_HEIGHT)) {
+                        explosions.add(new Explosion(player.getX(), player.getY(), true));
+                        player.setDying(true);
+                        bomb.setDestroyed(true);
+                    }
+                }
+            }
+            // Clean up destroyed bombs
+            enemy.cleanupDestroyedBombs();
+        }
         List<Shot> shotsToRemove = new ArrayList<>();
         int hitboxPadding = 40;
 
@@ -552,14 +643,14 @@ public class Scene1 extends JPanel {
                             score += 100;
                             AudioPlayer.SoundUtils.playSoundOnce("src/audio/explosion.wav");
                             explosions.add(new Explosion(enemyX, enemyHeight, false));
-                            if (boss.isDead()) {  // You need this method in Boss
-                                boss.setDying(true);  // Mark it dead
+                            if (boss.isDead()) {
+                                boss.setDying(true);
                                 bossDefeated = true;
                                 timer.stop();
                             }
                         } else {
-//                            var ii = new ImageIcon(IMG_EXPLOSION);
-//                            enemy.setImage(ii.getImage());
+                            // var ii = new ImageIcon(IMG_EXPLOSION);
+                            // enemy.setImage(ii.getImage());
                             enemy.setDying(true);
                             deaths++;
                             score += 100;
@@ -590,7 +681,7 @@ public class Scene1 extends JPanel {
         for (Explosion explosion : explosions) {
             explosion.visibleCountDown();
         }
-
+         // consider
         // enemies
         for (Enemy enemy : enemies) {
             int x = enemy.getX();
@@ -721,7 +812,8 @@ public class Scene1 extends JPanel {
                     }
                 }
             }
-        }
+        } 
+//consider
     }
 
     private void doGameCycle() {
@@ -751,7 +843,6 @@ public class Scene1 extends JPanel {
 
             player.keyPressed(e);
 
-            int x = player.getX();
             int y = player.getY();
 
             int key = e.getKeyCode();
