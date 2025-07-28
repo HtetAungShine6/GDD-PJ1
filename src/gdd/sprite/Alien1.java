@@ -62,6 +62,16 @@ public class Alien1 extends Enemy {
             currentFrame = (currentFrame + 1) % animationFrames.length;
             setImage(animationFrames[currentFrame]);
         }
+
+        // Handle bomb dropping
+        if (canShootBomb()) {
+            int alienCenterX = this.x + getImageWidth() / 2;
+            int alienBottomY = this.y + getImageHeight();
+            Bomb newBomb = new Bomb(alienCenterX, alienBottomY);
+            newBomb.setDestroyed(false);
+            addBomb(newBomb);
+            resetBombTimer();
+        }
     }
 
     @Override

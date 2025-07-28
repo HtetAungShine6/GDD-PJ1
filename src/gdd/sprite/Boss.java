@@ -4,12 +4,12 @@ import static gdd.Global.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import javax.swing.ImageIcon;
 
 public class Boss extends Enemy {
 
     private int speed = 2;
-    private double phase;
     private Image[] animationFrames;
     private int currentFrame = 0;
     private int frameDelay = 20;
@@ -18,6 +18,7 @@ public class Boss extends Enemy {
     private int health = 100;
     private int bombDropDelay = 100;
     private int bombDropTimer = 0;
+    private Random random = new Random();
     private List<Rock> rocks = new ArrayList<>();
     private int rockDropTimer = 0;
     private int rockDropDelay = 100;
@@ -46,12 +47,10 @@ public class Boss extends Enemy {
 
         setImage(animationFrames[0]);
 
-        this.phase = Math.random() * Math.PI * 2;
         this.rocks = new ArrayList<>();
-        bombs.clear(); // Remove the default bomb
-        for (int i = 0; i < 5; i++) {
-            bombs.add(new Bomb(x, y));
-        }
+        bombs.clear(); // Remove the default bomb from Enemy constructor
+
+        bombDropDelay = 30 + random.nextInt(91); // Start with random delay (0.5-2 seconds)
     }
 
     @Override
@@ -72,11 +71,16 @@ public class Boss extends Enemy {
             setImage(animationFrames[currentFrame]);
         }
 
-        // Drop bombs
+        // Drop bombs at random intervals
         bombDropTimer++;
-        if (bombDropTimer >= bombDropDelay && bombs.size() < 3) {
-            bombs.add(new Bomb(this.x + getImageWidth() / 2, this.y + getImageHeight()));
+        if (bombDropTimer >= bombDropDelay && bombs.size() < 5) {
+            // Allow up to 5 bombs on screen
+            int offsetX = random.nextInt(41) - 20; // Random offset between -20 and +20 pixels
+            int bombX = this.x + getImageWidth() / 2 - BOMB_WIDTH / 2 + offsetX;
+            int bombY = this.y + getImageHeight();
+            bombs.add(new Bomb(bombX, bombY));
             bombDropTimer = 0;
+            bombDropDelay = 30 + random.nextInt(91); // Random between 30-120 frames
         }
         // Drop rocks
         rockDropTimer++;

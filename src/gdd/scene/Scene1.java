@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.ImageIcon;
@@ -53,7 +52,6 @@ public class Scene1 extends JPanel {
     private boolean inGame = true;
     private String message = "Game Over";
     private final Dimension d = new Dimension(BOARD_WIDTH, BOARD_HEIGHT);
-    private final Random randomizer = new Random();
     private Timer timer;
 
     private HashMap<Integer, SpawnDetails> spawnMap = new HashMap<>();
@@ -97,7 +95,7 @@ public class Scene1 extends JPanel {
     }
 
     private void initBoard() {
-        loadSpawnDetailsFromCSV("src/map/scene1_spawn.csv");
+        loadSpawnDetailsFromCSV("src/map/scene2_spawn.csv");
         background = new ImageIcon("src/images/stage1Background.png").getImage();
     }
 
@@ -479,62 +477,35 @@ public class Scene1 extends JPanel {
         }
         enemies.removeAll(enemiesToRemove);
 
-        // Handle bomb creation for each enemy type
+        // Update enemy bombs
         for (Enemy enemy : enemies) {
             if (enemy.isVisible()) {
                 enemy.updateBombTimer();
-
-                if (enemy instanceof Boss) {
-                    if (randomizer.nextInt(60) == CHANCE) {
-                        Boss boss = (Boss) enemy;
-                        Bomb newBomb = new Bomb(boss.getX() + randomizer.nextInt(60) - 30, boss.getY());
-                        newBomb.setDestroyed(false);
-                        boss.addBomb(newBomb);
-                    }
-                } else if (enemy instanceof Alien2) {
-                    if (enemy.canShootBomb()) {
-                        Alien2 alien2 = (Alien2) enemy;
-                        Bomb newBomb = alien2.createBomb(); // Use simplified bomb creation
-                        if (newBomb != null) {
-                            newBomb.setDestroyed(false);
-                            alien2.addBomb(newBomb);
-                            enemy.resetBombTimer();
-                        }
-                    }
-                } else {
-                    if (enemy.canShootBomb()) {
-                        int alienCenterX = enemy.getX() + enemy.getImage().getWidth(null) / 2;
-                        int alienBottomY = enemy.getY() + enemy.getImage().getHeight(null);
-                        Bomb newBomb = new Bomb(alienCenterX, alienBottomY);
-                        newBomb.setDestroyed(false);
-                        enemy.addBomb(newBomb);
-                        enemy.resetBombTimer(); // Reset timer after shooting
-                    }
-                }
             }
         } // Update all bombs from all enemies
         for (Enemy enemy : enemies) {
+            if (enemy instanceof Alien2) {
+                // Handle Alien2 bomb movement
+                ((Alien2) enemy).moveBombs();
+            } else {
+                // Handle normal bomb movement
+                for (Bomb bomb : enemy.getBombs()) {
+                    if (!bomb.isDestroyed()) {
+                        bomb.setY(bomb.getY() + 2);
+
+                        if (bomb.getY() > BOARD_HEIGHT + 50 ||
+                                bomb.getX() < -50 || bomb.getX() > BOARD_WIDTH + 50) {
+                            bomb.setDestroyed(true);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Handle collision detection for all bombs from all enemies
+        for (Enemy enemy : enemies) {
             for (Bomb bomb : enemy.getBombs()) {
                 if (!bomb.isDestroyed()) {
-                    // Handle different bomb movement based on enemy type
-                    if (enemy instanceof Alien2) {
-                        Alien2 alien2 = (Alien2) enemy;
-                        // Diagonal movement for Alien2 bombs
-                        bomb.setY(bomb.getY() + 2);
-                        if (alien2.isFacingRight()) {
-                            bomb.setX(bomb.getX() + 1); // Move right
-                        } else {
-                            bomb.setX(bomb.getX() - 1); // Move left
-                        }
-                    } else {
-                        bomb.setY(bomb.getY() + 2);
-                    }
-
-                    if (bomb.getY() > BOARD_HEIGHT + 50 ||
-                            bomb.getX() < -50 || bomb.getX() > BOARD_WIDTH + 50) {
-                        bomb.setDestroyed(true);
-                    }
-
                     // Check collision with player
                     int bombX = bomb.getX();
                     int bombY = bomb.getY();

@@ -65,6 +65,16 @@ public class Alien2 extends Enemy {
             facingRight = !facingRight;
             setImage(facingRight ? rightFacingImage : leftFacingImage);
         }
+
+        // Handle bomb dropping
+        if (canShootBomb()) {
+            Bomb newBomb = createBomb();
+            if (newBomb != null) {
+                newBomb.setDestroyed(false);
+                addBomb(newBomb);
+                resetBombTimer();
+            }
+        }
     }
 
     public Bomb createBomb() {
@@ -78,6 +88,27 @@ public class Alien2 extends Enemy {
 
     public boolean isFacingRight() {
         return facingRight;
+    }
+
+    // Handle Alien2's diagonal bomb movement
+    public void moveBombs() {
+        for (Bomb bomb : getBombs()) {
+            if (!bomb.isDestroyed()) {
+                // Diagonal movement for Alien2 bombs
+                bomb.setY(bomb.getY() + 2);
+                if (isFacingRight()) {
+                    bomb.setX(bomb.getX() + 1); // Move right
+                } else {
+                    bomb.setX(bomb.getX() - 1); // Move left
+                }
+
+                // Check if bomb is out of bounds
+                if (bomb.getY() > BOARD_HEIGHT + 50 ||
+                        bomb.getX() < -50 || bomb.getX() > BOARD_WIDTH + 50) {
+                    bomb.setDestroyed(true);
+                }
+            }
+        }
     }
 
 }
