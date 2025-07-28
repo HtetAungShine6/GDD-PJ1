@@ -6,16 +6,15 @@ public class Global {
     }
 
     public static final int SCALE_FACTOR = 2; // Scaling factor for sprites
-
     public static final int BOARD_WIDTH = 716; // Doubled from 358
     public static final int BOARD_HEIGHT = 700; // Doubled from 350
-    public static final int BORDER_RIGHT = 60; // Doubled from 30
+    public static final int BORDER_RIGHT = 80; // Doubled from 30
     public static final int BORDER_LEFT = 10; // Doubled from 5
     public static final int BORDER_TOP = 50; // Top boundary for player
     public static final int BORDER_BOTTOM = 100; // Bottom boundary for player
 
     public static final int GROUND = 580; // Doubled from 290
-    public static final int BOMB_HEIGHT = 10; // Doubled from 5
+    public static final int BOMB_HEIGHT = 20; // Doubled from 5
     public static final int BOMB_WIDTH = 10;
 
     public static final int ALIEN_HEIGHT = 24; // Doubled from 12
@@ -28,11 +27,10 @@ public class Global {
     public static final int NUMBER_OF_ALIENS_TO_DESTROY = 24;
     public static final int CHANCE = 5;
     public static final int DELAY = 17;
-    public static final int PLAYER_WIDTH = 10; // Doubled from 15
-    public static final int PLAYER_HEIGHT = 20; // Doubled from 10
-    public static final int ROCK_WIDTH = 40;  // or your rock image width
+    public static final int PLAYER_WIDTH = 60; // Doubled from 15
+    public static final int PLAYER_HEIGHT = 40; // Doubled from 10
+    public static final int ROCK_WIDTH = 40; // or your rock image width
     public static final int ROCK_HEIGHT = 40;
-
 
     // Images
     public static final String IMG_ENEMY = "src/images/alienType1.png";

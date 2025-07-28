@@ -1,5 +1,6 @@
 package gdd.sprite;
 
+import static gdd.Global.*;
 import javax.swing.ImageIcon;
 
 public class Bomb extends Sprite {
@@ -7,19 +8,14 @@ public class Bomb extends Sprite {
     private boolean destroyed;
 
     public Bomb(int x, int y) {
-        initBomb(x, y);
-    }
-
-    private void initBomb(int x, int y) {
-        setDestroyed(true);
+        this.destroyed = false;
         this.x = x;
         this.y = y;
 
         var bombImg = "src/images/bomb.png";
         var ii = new ImageIcon(bombImg);
-        var scaledImage = ii.getImage().getScaledInstance(10, 20, java.awt.Image.SCALE_SMOOTH);
+        var scaledImage = ii.getImage().getScaledInstance(BOMB_WIDTH, BOMB_HEIGHT, java.awt.Image.SCALE_SMOOTH);
         setImage(scaledImage);
-        // setImage(ii.getImage());
     }
 
     public void setDestroyed(boolean destroyed) {
@@ -32,8 +28,6 @@ public class Bomb extends Sprite {
 
     @Override
     public void act() {
-        if (!destroyed) {
-            y += 2; // Doubled from 1 to 2
-        }
+        // Movement is handled in Scene1
     }
 }

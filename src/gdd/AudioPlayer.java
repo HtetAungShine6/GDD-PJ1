@@ -38,10 +38,6 @@ public class AudioPlayer {
         clip.open(audioInputStream);
 
         clip.loop(Clip.LOOP_CONTINUOUSLY);
-
-        // if (loop) {
-        //     clip.loop(Clip.LOOP_CONTINUOUSLY);
-        // }
     }
 
     public class SoundUtils {
@@ -119,7 +115,7 @@ public class AudioPlayer {
 
     // Method to play the audio
     public void play() {
-        //start the clip
+        // start the clip
         clip.start();
 
         status = "play";
@@ -131,8 +127,7 @@ public class AudioPlayer {
             System.out.println("audio is already paused");
             return;
         }
-        this.currentFrame
-                = this.clip.getMicrosecondPosition();
+        this.currentFrame = this.clip.getMicrosecondPosition();
         clip.stop();
         status = "paused";
     }

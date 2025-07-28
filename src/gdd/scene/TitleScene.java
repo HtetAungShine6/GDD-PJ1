@@ -27,12 +27,6 @@ public class TitleScene extends JPanel {
 
     public TitleScene(Game game) {
         this.game = game;
-        // initBoard();
-        // initTitle();
-    }
-
-    private void initBoard() {
-
     }
 
     public void start() {
@@ -130,40 +124,6 @@ public class TitleScene extends JPanel {
         Toolkit.getDefaultToolkit().sync();
     }
 
-
-
-//    private void doDrawing(Graphics g) {
-//
-//        g.setColor(Color.black);
-//        g.fillRect(0, 0, d.width, d.height);
-//
-//        g.drawImage(image, 0, -80, d.width, d.height, this);
-//
-//        if (frame % 60 < 30) {
-//            g.setColor(Color.red);
-//        } else {
-//            g.setColor(Color.white);
-//        }
-//
-//        g.setFont(g.getFont().deriveFont(32f));
-//        String text = "Press SPACE to Start";
-//        int stringWidth = g.getFontMetrics().stringWidth(text);
-//        int x = (d.width - stringWidth) / 2;
-//        // int stringHeight = g.getFontMetrics().getAscent();
-//        // int y = (d.height + stringHeight) / 2;
-//        g.drawString(text, x, 600);
-//
-//        g.setColor(Color.gray);
-//        g.drawString("Team Members:", 10, 30);
-//        g.drawString("1. Hein Naing Soe", 10, 70);
-//        g.drawString("2. Htet Aung Shine", 10, 110);
-//        g.drawString("3. Hsu Yee Mon", 10, 150);
-//        g.setFont(g.getFont().deriveFont(10f));
-//        // g.drawString("Game by Chayapol", 10, 650);
-//
-//        Toolkit.getDefaultToolkit().sync();
-//    }
-
     private void update() {
         frame++;
     }
@@ -194,7 +154,7 @@ public class TitleScene extends JPanel {
             int key = e.getKeyCode();
             if (key == KeyEvent.VK_SPACE) {
                 // Load the next scene
-                game.loadScene2();
+                game.loadScene1();
             }
 
         }

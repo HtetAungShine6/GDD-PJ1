@@ -5,10 +5,11 @@ import javax.swing.ImageIcon;
 
 public class Shot extends Sprite {
 
-    private static final int H_SPACE = 20;
-    private static final int V_SPACE = 1;
+    private static final int H_SPACE = -7;
+    private static final int V_SPACE = 30;
 
-    public Shot() {}
+    public Shot() {
+    }
 
     public Shot(int x, int y) {
 
