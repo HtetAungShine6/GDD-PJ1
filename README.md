@@ -39,6 +39,7 @@ A 2D space shooter game inspired by the classic **Space Invaders**, built using 
 | Key        | Action                   |
 |------------|--------------------------|
 | `← / →`    | Move left / right        |
+| `↑ / ↓`    | Move up / down           |
 | `SPACE`    | Fire bullets             |
 | `ESC`      | Exit the game            |
 
