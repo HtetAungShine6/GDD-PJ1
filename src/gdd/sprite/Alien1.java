@@ -6,7 +6,6 @@ import java.awt.*;
 
 public class Alien1 extends Enemy {
 
-    // private Bomb bomb;
     private Image[] animationFrames;
     private int currentFrame = 0;
     private int frameDelay = 16;

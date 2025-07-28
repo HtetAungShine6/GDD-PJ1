@@ -11,10 +11,10 @@ import gdd.sprite.Alien1;
 import gdd.sprite.Alien2;
 import gdd.sprite.Bomb;
 import gdd.sprite.Boss;
-import gdd.sprite.DirectionalBomb;
 import gdd.sprite.Enemy;
 import gdd.sprite.Explosion;
 import gdd.sprite.Player;
+import gdd.sprite.Rock;
 import gdd.sprite.Shot;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -43,51 +43,30 @@ public class Scene1 extends JPanel {
     private List<Shot> shots;
     private Player player;
     private int score = 0;
+
     private Image background;
     private int backgroundY = 0;
     private double backgroundScrollSpeed = 0.6;
     private double backgroundPosition = 0.0;
 
-    // private Shot shot;
-    final int BLOCKHEIGHT = 50;
-    final int BLOCKWIDTH = 50;
-
-    final int BLOCKS_TO_DRAW = BOARD_HEIGHT / BLOCKHEIGHT;
-
-    private int direction = -1;
-    private int deaths = 0;
-
+    private int direction = -1; // Enemy movement direction
     private boolean inGame = true;
     private String message = "Game Over";
-
     private final Dimension d = new Dimension(BOARD_WIDTH, BOARD_HEIGHT);
     private final Random randomizer = new Random();
-
     private Timer timer;
-    private final Game game;
-
-    private int currentRow = -1;
-    // TODO load this map from a file
-    private int mapOffset = 0;
 
     private HashMap<Integer, SpawnDetails> spawnMap = new HashMap<>();
     private AudioPlayer audioPlayer;
-    private int lastRowToShow;
-    private int firstRowToShow;
 
     private boolean bossComing = false;
     private boolean bossSpawned = false;
     private boolean showBossAlert = false;
     private int bossAlertFramesLeft = 0;
-
-    private AudioPlayer gunshotPlayer;
-
     private boolean bossDefeated = false;
 
     public Scene1(Game game) {
-        this.game = game;
         initBoard();
-        // gameInit();
     }
 
     private void initAudio() {
@@ -102,7 +81,8 @@ public class Scene1 extends JPanel {
 
     private void loadSpawnDetailsFromCSV(String path) {
         try (BufferedReader br = new BufferedReader(new FileReader(path))) {
-            String line = br.readLine(); // skip header
+            String line = br.readLine();
+
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
                 int frame = Integer.parseInt(parts[0]);
@@ -128,17 +108,17 @@ public class Scene1 extends JPanel {
         setBackground(Color.black);
 
         timer = new Timer(1000 / 60, new GameCycle());
-        timer.start();
+        timer.start(); // Start game loop
 
         gameInit();
         initAudio();
     }
 
     public void stop() {
-        timer.stop();
+        timer.stop(); // Stop game loop
         try {
             if (audioPlayer != null) {
-                audioPlayer.stop();
+                audioPlayer.stop(); // Stop background music
             }
         } catch (Exception e) {
             System.err.println("Error closing audio player.");
@@ -146,7 +126,6 @@ public class Scene1 extends JPanel {
     }
 
     private void gameInit() {
-
         enemies = new ArrayList<>();
         powerups = new ArrayList<>();
         explosions = new ArrayList<>();
@@ -154,57 +133,34 @@ public class Scene1 extends JPanel {
         player = new Player();
     }
 
-    private void drawStarCluster(Graphics g, int x, int y, int width, int height) {
-        // Set star color to white
-        g.setColor(Color.WHITE);
-
-        // Draw multiple stars in a cluster pattern
-        // Main star (larger)
-        int centerX = x + width / 2;
-        int centerY = y + height / 2;
-        g.fillOval(centerX - 2, centerY - 2, 4, 4);
-
-        // Smaller surrounding stars
-        g.fillOval(centerX - 15, centerY - 10, 2, 2);
-        g.fillOval(centerX + 12, centerY - 8, 2, 2);
-        g.fillOval(centerX - 8, centerY + 12, 2, 2);
-        g.fillOval(centerX + 10, centerY + 15, 2, 2);
-
-        // Tiny stars for more detail
-        g.fillOval(centerX - 20, centerY + 5, 1, 1);
-        g.fillOval(centerX + 18, centerY - 15, 1, 1);
-        g.fillOval(centerX - 5, centerY - 18, 1, 1);
-        g.fillOval(centerX + 8, centerY + 20, 1, 1);
-    }
-
     private void drawAliens(Graphics g) {
-
         for (Enemy enemy : enemies) {
-
             if (enemy.isVisible()) {
-
                 g.drawImage(enemy.getImage(), enemy.getX(), enemy.getY(), this);
+
+                // Draw boss rocks if this is a boss
+                if (enemy instanceof Boss boss) {
+                    for (Rock rock : boss.getRocks()) {
+                        if (rock.isVisible()) {
+                            g.drawImage(rock.getImage(), rock.getX(), rock.getY(), this);
+                        }
+                    }
+                }
             }
-
             if (enemy.isDying()) {
-
-                enemy.die();
+                enemy.die(); // Clean up dying enemies
             }
         }
     }
 
-    private void drawPowreUps(Graphics g) {
-
+    private void drawPowerUps(Graphics g) {
         for (PowerUp p : powerups) {
 
             if (p.isVisible()) {
-
                 g.drawImage(p.getImage(), p.getX(), p.getY(), this);
             }
-
             if (p.isDying()) {
-
-                p.die();
+                p.die(); // Clean up collected power-ups
             }
         }
     }
@@ -215,7 +171,6 @@ public class Scene1 extends JPanel {
         }
         if (player.isDying()) {
             player.die();
-            // inGame = false;
             boolean explosionDone = true;
             for (Explosion ex : explosions) {
                 if (ex.isVisible()) {
@@ -323,7 +278,7 @@ public class Scene1 extends JPanel {
 
         if (inGame && !bossDefeated) {
             drawExplosions(g);
-            drawPowreUps(g);
+            drawPowerUps(g);
             drawAliens(g);
             drawPlayer(g);
             drawShot(g);
@@ -421,6 +376,7 @@ public class Scene1 extends JPanel {
     }
 
     private void update() {
+        // Update scrolling background
         backgroundPosition += backgroundScrollSpeed;
         backgroundY = (int) backgroundPosition;
         if (backgroundY >= d.height) {
@@ -538,10 +494,10 @@ public class Scene1 extends JPanel {
                 } else if (enemy instanceof Alien2) {
                     if (enemy.canShootBomb()) {
                         Alien2 alien2 = (Alien2) enemy;
-                        DirectionalBomb dirBomb = alien2.createDirectionalBomb();
-                        if (dirBomb != null) {
-                            dirBomb.setDestroyed(false);
-                            alien2.addBomb(dirBomb);
+                        Bomb newBomb = alien2.createBomb(); // Use simplified bomb creation
+                        if (newBomb != null) {
+                            newBomb.setDestroyed(false);
+                            alien2.addBomb(newBomb);
                             enemy.resetBombTimer();
                         }
                     }
@@ -560,8 +516,16 @@ public class Scene1 extends JPanel {
         for (Enemy enemy : enemies) {
             for (Bomb bomb : enemy.getBombs()) {
                 if (!bomb.isDestroyed()) {
-                    if (bomb instanceof DirectionalBomb) {
-                        bomb.act();
+                    // Handle different bomb movement based on enemy type
+                    if (enemy instanceof Alien2) {
+                        Alien2 alien2 = (Alien2) enemy;
+                        // Diagonal movement for Alien2 bombs
+                        bomb.setY(bomb.getY() + 2);
+                        if (alien2.isFacingRight()) {
+                            bomb.setX(bomb.getX() + 1); // Move right
+                        } else {
+                            bomb.setX(bomb.getX() - 1); // Move left
+                        }
                     } else {
                         bomb.setY(bomb.getY() + 2);
                     }
@@ -590,9 +554,30 @@ public class Scene1 extends JPanel {
             }
             // Clean up destroyed bombs
             enemy.cleanupDestroyedBombs();
+
+            // Check rock collisions with player (for Boss)
+            if (enemy instanceof Boss boss) {
+                for (Rock rock : boss.getRocks()) {
+                    if (rock.isVisible() && player.isVisible()) {
+                        int rockX = rock.getX();
+                        int rockY = rock.getY();
+                        int playerX = player.getX();
+                        int playerY = player.getY();
+
+                        // Check collision using rock and player dimensions
+                        if (rockX + rock.getImageWidth() >= playerX
+                                && rockX <= (playerX + player.getImageWidth())
+                                && rockY + rock.getImageHeight() >= playerY
+                                && rockY <= (playerY + player.getImageHeight())) {
+                            explosions.add(new Explosion(player.getX(), player.getY(), true));
+                            player.setDying(true);
+                            rock.setVisible(false); // Rock disappears on collision
+                        }
+                    }
+                }
+            }
         }
         List<Shot> shotsToRemove = new ArrayList<>();
-        int hitboxPadding = 40;
 
         for (Shot shot : shots) {
 
@@ -611,7 +596,6 @@ public class Scene1 extends JPanel {
                     int enemyHeight = enemy.getImageHeight();
 
                     if (enemy instanceof Boss) {
-                        // Optional: increase hitbox size further if needed
                         enemyWidth += 20;
                         enemyHeight += 20;
                     }
@@ -631,10 +615,7 @@ public class Scene1 extends JPanel {
                                 timer.stop();
                             }
                         } else {
-                            // var ii = new ImageIcon(IMG_EXPLOSION);
-                            // enemy.setImage(ii.getImage());
                             enemy.setDying(true);
-                            deaths++;
                             score += 100;
                             AudioPlayer.SoundUtils.playSoundOnce("src/audio/explosion.wav");
                             explosions.add(new Explosion(enemyX, enemyY, false));
@@ -645,11 +626,35 @@ public class Scene1 extends JPanel {
                     }
                 }
 
+                // Check shot collision with boss rocks
+                for (Enemy enemy : enemies) {
+                    if (enemy instanceof Boss boss && boss.isVisible()) {
+                        for (Rock rock : boss.getRocks()) {
+                            if (rock.isVisible() && shot.isVisible()) {
+                                int rockX = rock.getX();
+                                int rockY = rock.getY();
+
+                                if (shotX >= rockX && shotX <= rockX + rock.getImageWidth()
+                                        && shotY >= rockY && shotY <= rockY + rock.getImageHeight()) {
+                                    // Rock destroyed by shot
+                                    rock.setVisible(false);
+                                    explosions.add(new Explosion(rockX, rockY, false));
+                                    score += 10; // Small score for destroying rocks
+                                    shot.die();
+                                    shotsToRemove.add(shot);
+                                    break; // Exit rock loop since shot is destroyed
+                                }
+                            }
+                        }
+                        if (!shot.isVisible())
+                            break; // Exit enemy loop if shot was destroyed
+                    }
+                }
+
                 int y = shot.getY();
-                // y -= 4;
                 y -= 20;
 
-                if (y < 0) {
+                if (y < -50) {
                     shot.die();
                     shotsToRemove.add(shot);
                 } else {
@@ -680,7 +685,7 @@ public class Scene1 extends JPanel {
     }
 
     private class TAdapter extends KeyAdapter {
-
+        // Keyboard input handler for player controls
         @Override
         public void keyReleased(KeyEvent e) {
             player.keyReleased(e);
@@ -689,24 +694,22 @@ public class Scene1 extends JPanel {
         @Override
         public void keyPressed(KeyEvent e) {
             System.out.println("Scene2.keyPressed: " + e.getKeyCode());
-
             player.keyPressed(e);
-
             int y = player.getY();
-
             int key = e.getKeyCode();
 
             if (key == KeyEvent.VK_SPACE && inGame) {
-
+                // Handle shooting when spacebar is pressed
                 AudioPlayer.SoundUtils.playSoundOnce("src/audio/laser.wav");
 
                 int multishotLevel = player.getMultishotLevel();
                 int centerX = player.getX() + PLAYER_WIDTH / 2;
 
                 int spacing = 10;
-                int totalWidth = spacing * (multishotLevel - 1);
+                int totalWidth = spacing * (multishotLevel - 1); // Total width of shot spread
                 int startX = centerX - totalWidth / 2;
 
+                // Create multiple shots based on multishot level
                 for (int i = 0; i < multishotLevel; i++) {
                     int shotX = startX + i * spacing;
                     shots.add(new Shot(shotX, y));

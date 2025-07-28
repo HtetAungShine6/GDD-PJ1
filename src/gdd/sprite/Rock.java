@@ -4,6 +4,11 @@ import javax.swing.*;
 import java.awt.*;
 import static gdd.Global.*;
 
+/**
+ * Rock projectile shot by Boss enemy.
+ * Features animated frames and diagonal movement.
+ * Collides with player (damage) and player shots (destroyable).
+ */
 public class Rock extends Sprite {
     private double dx;
     private double dy;
@@ -25,13 +30,12 @@ public class Rock extends Sprite {
         // Load animation frames
         animationFrames = new Image[6];
         for (int i = 0; i < animationFrames.length; i++) {
-            String path = "src/images/rock" + (i+1) + ".png";
+            String path = "src/images/rock" + (i + 1) + ".png";
             ImageIcon ii = new ImageIcon(path);
             Image scaled = ii.getImage().getScaledInstance(
-                    (int)(ii.getIconWidth() * SCALE_FACTOR * 0.5),
-                    (int)(ii.getIconHeight() * SCALE_FACTOR * 0.5),
-                    Image.SCALE_SMOOTH
-            );
+                    (int) (ii.getIconWidth() * SCALE_FACTOR * 0.5),
+                    (int) (ii.getIconHeight() * SCALE_FACTOR * 0.5),
+                    Image.SCALE_SMOOTH);
             animationFrames[i] = scaled;
         }
 

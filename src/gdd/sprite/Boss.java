@@ -26,7 +26,6 @@ public class Boss extends Enemy {
         return rocks;
     }
 
-
     public Boss(int x, int y) {
         super(x, y);
         animationFrames = new Image[2];
@@ -54,7 +53,6 @@ public class Boss extends Enemy {
             bombs.add(new Bomb(x, y));
         }
     }
-
 
     @Override
     public void act(int ignoredDirection) {
@@ -86,7 +84,7 @@ public class Boss extends Enemy {
             if (rocks.size() < 9) { // allow more total on screen
                 int rocksToDrop = 3;
                 for (int i = 0; i < rocksToDrop; i++) {
-                    int offsetX = (int)(Math.random() * getImageWidth()) - getImageWidth() / 2;
+                    int offsetX = (int) (Math.random() * getImageWidth()) - getImageWidth() / 2;
                     int rockX = this.x + getImageWidth() / 2 + offsetX;
                     int rockY = this.y + getImageHeight();
                     rocks.add(new Rock(rockX, rockY));
@@ -94,7 +92,6 @@ public class Boss extends Enemy {
             }
             rockDropTimer = 0;
         }
-
 
         List<Rock> toRemove = new ArrayList<>();
         for (Rock r : rocks) {
@@ -105,7 +102,6 @@ public class Boss extends Enemy {
             }
         }
         rocks.removeAll(toRemove);
-
 
         // Update bombs
         for (Bomb b : bombs) {

@@ -37,6 +37,7 @@ public class Enemy extends Sprite {
         this.x += direction;
     }
 
+    // Method to get the first bomb, if any
     public Bomb getBomb() {
         return bombs.isEmpty() ? null : bombs.get(0);
     }
@@ -45,6 +46,7 @@ public class Enemy extends Sprite {
         return bombs;
     }
 
+    // Method to create a new bomb
     public void addBomb(Bomb bomb) {
         bombs.add(bomb);
     }
@@ -74,8 +76,6 @@ public class Enemy extends Sprite {
 
     @Override
     public void act() {
-        // bomb.act();
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'act'");
     }
 }

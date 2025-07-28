@@ -17,8 +17,6 @@ public class Player extends Sprite {
     private int shotLevel = 1;
     private Image[] multishotImages;
 
-    private Rectangle bounds = new Rectangle(175, 135, 17, 32);
-
     public Player() {
         initPlayer();
     }
@@ -64,12 +62,6 @@ public class Player extends Sprite {
         return this.shotLevel;
     }
 
-    private void setMultishotLevel(int level) {
-        if (level >= 1 && level <= 4) {
-            multishotLevel = level;
-        }
-    }
-
     public boolean upgradeMultishot() {
         if (multishotLevel < 4) {
             multishotLevel++;
@@ -88,8 +80,7 @@ public class Player extends Sprite {
             x = BORDER_LEFT;
         }
 
-        // Right boundary check - use the same boundary as aliens, accounting for player
-        // width
+        // Right boundary check - accounting for player width
         if (x >= BOARD_WIDTH - BORDER_RIGHT - width) {
             x = BOARD_WIDTH - BORDER_RIGHT - width;
         }

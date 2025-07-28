@@ -19,20 +19,21 @@ public class Alien2 extends Enemy {
         setBombInterval(8);
         this.exactX = x;
         this.exactY = y;
-        bombs.clear();
-        bombs.add(new DirectionalBomb(x, y, 0, 1));
 
         // Load direction-specific images
         ImageIcon rightIcon = new ImageIcon("src/images/alienType2_r.png");
         ImageIcon leftIcon = new ImageIcon("src/images/alienType2_l.png");
 
-        int scaledWidth = (int) (rightIcon.getIconWidth() * SCALE_FACTOR * 0.7);
-        int scaledHeight = (int) (rightIcon.getIconHeight() * SCALE_FACTOR * 0.7);
+        int rightScaledWidth = (int) (rightIcon.getIconWidth() * SCALE_FACTOR * 0.7);
+        int rightScaledHeight = (int) (rightIcon.getIconHeight() * SCALE_FACTOR * 0.7);
+
+        int leftScaledWidth = (int) (leftIcon.getIconWidth() * SCALE_FACTOR * 0.7);
+        int leftScaledHeight = (int) (leftIcon.getIconHeight() * SCALE_FACTOR * 0.7);
 
         rightFacingImage = rightIcon.getImage().getScaledInstance(
-                scaledWidth, scaledHeight, java.awt.Image.SCALE_SMOOTH);
+                rightScaledWidth, rightScaledHeight, java.awt.Image.SCALE_SMOOTH);
         leftFacingImage = leftIcon.getImage().getScaledInstance(
-                scaledWidth, scaledHeight, java.awt.Image.SCALE_SMOOTH);
+                leftScaledWidth, leftScaledHeight, java.awt.Image.SCALE_SMOOTH);
 
         // Start with a random facing direction and set initial image
         this.facingRight = Math.random() > 0.5;
@@ -60,30 +61,23 @@ public class Alien2 extends Enemy {
         }
 
         // Check for direction change at boundaries and update sprite
-        if (this.x <= BORDER_LEFT || this.x >= BOARD_WIDTH - BORDER_RIGHT) {
+        if (this.x <= BORDER_LEFT || this.x >= BOARD_WIDTH - BORDER_RIGHT + 25) {
             facingRight = !facingRight;
             setImage(facingRight ? rightFacingImage : leftFacingImage);
         }
     }
 
-    @Override
-    public Bomb getBomb() {
-        return super.getBomb();
-    }
-
-    public DirectionalBomb createDirectionalBomb() {
+    public Bomb createBomb() {
         int bombStartX = this.x + getImageWidth() / 2;
         int bombStartY = this.y + getImageHeight();
-        // Set bomb direction to match alien's movement
-        double bombDirectionX = facingRight ? 1.0 : -1.0;
-        double bombDirectionY = 1.0;
 
-        return new DirectionalBomb(bombStartX, bombStartY, bombDirectionX, bombDirectionY);
+        Bomb bomb = new Bomb(bombStartX, bombStartY);
+
+        return bomb;
     }
 
-    public void setDirectionalBomb(DirectionalBomb newBomb) {
-        bombs.clear();
-        bombs.add(newBomb);
+    public boolean isFacingRight() {
+        return facingRight;
     }
 
 }
