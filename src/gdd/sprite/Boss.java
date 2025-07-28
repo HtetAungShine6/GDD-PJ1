@@ -2,6 +2,7 @@ package gdd.sprite;
 
 import static gdd.Global.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.ImageIcon;
 
@@ -14,7 +15,7 @@ public class Boss extends Enemy {
     private int frameDelay = 20;
     private int frameCount = 0;
     private int direction = 1;
-    private int health = 10;
+    private int health = 100;
     private int bombDropDelay = 100;
     private int bombDropTimer = 0;
     private List<Rock> rocks = new ArrayList<>();
