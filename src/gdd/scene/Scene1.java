@@ -10,7 +10,6 @@ import gdd.powerup.SpeedUp;
 import gdd.sprite.Alien1;
 import gdd.sprite.Alien2;
 import gdd.sprite.Bomb;
-import gdd.sprite.Rock;
 import gdd.sprite.Boss;
 import gdd.sprite.DirectionalBomb;
 import gdd.sprite.Enemy;
@@ -118,7 +117,7 @@ public class Scene1 extends JPanel {
     }
 
     private void initBoard() {
-        loadSpawnDetailsFromCSV("src/map/scene1_spawn.csv");
+        loadSpawnDetailsFromCSV("src/map/scene2_spawn.csv");
         background = new ImageIcon("src/images/stage1Background.png").getImage();
     }
 
@@ -245,22 +244,9 @@ public class Scene1 extends JPanel {
 
     private void drawBombing(Graphics g) {
         for (Enemy e : enemies) {
-            if (e instanceof Boss) {
-                Boss boss = (Boss) e;
-                for (Bomb b : boss.getBombs()) {
-                    if (!b.isDestroyed()) {
-                        g.drawImage(b.getImage(), b.getX(), b.getY(), this);
-                    }
-                }
-                for (Rock r : boss.getRocks()) {
-                    if (r.isVisible()) {
-                        g.drawImage(r.getImage(), r.getX(), r.getY(), this);
-                    }
-                }
-            } else {
-                Bomb b = e.getBomb();
-                if (!b.isDestroyed()) {
-                    g.drawImage(b.getImage(), b.getX(), b.getY(), this);
+            for (Bomb bomb : e.getBombs()) {
+                if (!bomb.isDestroyed()) {
+                    g.drawImage(bomb.getImage(), bomb.getX(), bomb.getY(), this);
                 }
             }
         }
@@ -286,20 +272,17 @@ public class Scene1 extends JPanel {
 
         try {
             doDrawing(g);
-        } catch (UnsupportedAudioFileException e) {
-            throw new RuntimeException(e);
-        } catch (LineUnavailableException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
             throw new RuntimeException(e);
         }
     }
+
     private void drawBossHealthBar(Graphics g) {
         for (Enemy enemy : enemies) {
             if (enemy instanceof Boss boss && boss.isVisible()) {
-                int maxHealth = 10; // change if you set different health
+                int maxHealth = 100; // change if you set different health
                 int currentHealth = boss.getHealth();
-                int barWidth = 200;
+                int barWidth = Math.min(BOARD_WIDTH - 100, maxHealth * 2);
                 int barHeight = 15;
                 int x = (BOARD_WIDTH - barWidth) / 2;
                 int y = 30;
@@ -319,8 +302,7 @@ public class Scene1 extends JPanel {
         }
     }
 
-
-    private void doDrawing(Graphics g)  throws UnsupportedAudioFileException, LineUnavailableException, IOException{
+    private void doDrawing(Graphics g) throws UnsupportedAudioFileException, LineUnavailableException, IOException {
         if (bossSpawned) {
             // Draw boss background with scrolling
             g.drawImage(bossBackground, 0, bossBackgroundY, d.width, d.height, this);
@@ -423,6 +405,7 @@ public class Scene1 extends JPanel {
             System.err.println("Failed to change music: " + e.getMessage());
         }
     }
+
     private Image bossBackground = new ImageIcon("src/images/bossFightBackground.png").getImage();
     private int bossBackgroundY = 0;
     private double bossBackgroundPosition = 0.0;
@@ -487,7 +470,6 @@ public class Scene1 extends JPanel {
                     break;
             }
         }
-
 
         // Handle boss alert and spawning
         if (showBossAlert && bossAlertFramesLeft > 0) {
@@ -681,139 +663,6 @@ public class Scene1 extends JPanel {
         for (Explosion explosion : explosions) {
             explosion.visibleCountDown();
         }
-         // consider
-        // enemies
-        for (Enemy enemy : enemies) {
-            int x = enemy.getX();
-            if (x >= BOARD_WIDTH - BORDER_RIGHT && direction != -1) {
-                direction = -1;
-                for (Enemy e2 : enemies) {
-                    e2.setY(e2.getY() + GO_DOWN);
-                }
-            }
-            if (x <= BORDER_LEFT && direction != 1) {
-                direction = 1;
-                for (Enemy e : enemies) {
-                    e.setY(e.getY() + GO_DOWN);
-                }
-            }
-        }
-
-        for (Enemy enemy : enemies) {
-            if (enemy instanceof Boss) {
-                Boss boss = (Boss) enemy;
-                for (Bomb bomb : boss.getBombs()) {
-                    int chance = randomizer.nextInt(30); // less frequent
-
-                    if (chance == CHANCE && bomb.isDestroyed() && boss.isVisible()) {
-                        bomb.setDestroyed(false);
-                        bomb.setX(boss.getX() + randomizer.nextInt(60) - 30);
-                        bomb.setY(boss.getY());
-                    }
-
-                    if (!bomb.isDestroyed()) {
-                        bomb.setY(bomb.getY() + 2);
-                        if (bomb.getY() >= GROUND - BOMB_HEIGHT) {
-                            bomb.setDestroyed(true);
-                        }
-
-                        int bombX = bomb.getX();
-                        int bombY = bomb.getY();
-                        int playerX = player.getX();
-                        int playerY = player.getY();
-
-                        if (player.isVisible() && !bomb.isDestroyed()
-                                && bombX + BOMB_WIDTH >= playerX
-                                && bombX <= (playerX + PLAYER_WIDTH)
-                                && bombY + BOMB_HEIGHT >= playerY
-                                && bombY <= (playerY + PLAYER_HEIGHT)) {
-                            explosions.add(new Explosion(player.getX(), player.getY(), true));
-                            player.setDying(true);
-                            bomb.setDestroyed(true);
-                        }
-
-                        if (!bomb.isDestroyed()) {
-                            bomb.setY(bomb.getY() + 1);
-                            if (bomb.getY() >= GROUND - BOMB_HEIGHT) {
-                                bomb.setDestroyed(true);
-                            }
-                        }
-                    }
-                }
-                        for (Rock rock : boss.getRocks()) {
-                            if (!rock.isVisible()) continue;
-
-                            // Move rock
-                            rock.act();
-
-                            // Check collision with player
-                            int rockX = rock.getX();
-                            int rockY = rock.getY();
-                            int playerX = player.getX();
-                            int playerY = player.getY();
-
-                            if (player.isVisible()
-                                    && rockX + ROCK_WIDTH >= playerX
-                                    && rockX <= playerX + PLAYER_WIDTH
-                                    && rockY + ROCK_HEIGHT >= playerY
-                                    && rockY <= playerY + PLAYER_HEIGHT) {
-
-                                explosions.add(new Explosion(playerX, playerY, true));
-                                AudioPlayer.SoundUtils.playSoundOnce("src/audio/player-explosion.wav");
-                                player.setDying(true);
-                                rock.setVisible(false);
-                            }
-
-                            if (rockY > GROUND) {
-                                rock.setVisible(false);
-                            }
-
-
-                }
-
-            } else {
-                Bomb bomb = enemy.getBomb();
-                int chance = randomizer.nextInt(50);
-                if (chance == CHANCE && enemy.isVisible() && bomb.isDestroyed()) {
-                    bomb.setDestroyed(false);
-                    int alienCenterX = enemy.getX() + enemy.getImage().getWidth(null) / 2;
-                    int alienBottomY = enemy.getY() + enemy.getImage().getHeight(null);
-                    bomb.setX(alienCenterX);
-                    bomb.setY(alienBottomY);
-                }
-
-                if (!bomb.isDestroyed()) {
-                    bomb.setY(bomb.getY() + 1);
-                    if (bomb.getY() >= GROUND - BOMB_HEIGHT) {
-                        bomb.setDestroyed(true);
-                    }
-
-                    int bombX = bomb.getX();
-                    int bombY = bomb.getY();
-                    int playerX = player.getX();
-                    int playerY = player.getY();
-
-                    if (player.isVisible() && !bomb.isDestroyed()
-                            && bombX + BOMB_WIDTH >= playerX
-                            && bombX <= (playerX + PLAYER_WIDTH)
-                            && bombY + BOMB_HEIGHT >= playerY
-                            && bombY <= (playerY + PLAYER_HEIGHT)) {
-                        explosions.add(new Explosion(player.getX(), player.getY(), true));
-                        AudioPlayer.SoundUtils.playSoundOnce("src/audio/player-explosion.wav");
-                        player.setDying(true);
-                        bomb.setDestroyed(true);
-                    }
-
-                    if (!bomb.isDestroyed()) {
-                        bomb.setY(bomb.getY() + 1);
-                        if (bomb.getY() >= GROUND - BOMB_HEIGHT) {
-                            bomb.setDestroyed(true);
-                        }
-                    }
-                }
-            }
-        } 
-//consider
     }
 
     private void doGameCycle() {
