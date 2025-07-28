@@ -117,7 +117,7 @@ public class Scene1 extends JPanel {
     }
 
     private void initBoard() {
-        loadSpawnDetailsFromCSV("src/map/scene2_spawn.csv");
+        loadSpawnDetailsFromCSV("src/map/scene1_spawn.csv");
         background = new ImageIcon("src/images/stage1Background.png").getImage();
     }
 
